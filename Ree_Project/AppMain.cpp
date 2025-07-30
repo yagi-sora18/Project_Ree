@@ -57,17 +57,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     return 0;
 }
 
-//=== 更新処理 ===//
 void Update(Player& player)
 {
     InputControl* input = InputControl::GetInstance();
 
+    // --- 入力処理：左右移動 (常に受け付ける) --- //
+    if (input->GetKey(KEY_INPUT_A))  player.vel.x = -MOVE_SPEED;
+    else if (input->GetKey(KEY_INPUT_D)) player.vel.x = MOVE_SPEED;
+    else player.vel.x = 0.0f; // 何も押してないときは停止（慣性を残したい場合は緩やかに減衰させてもOK）
+
     // --- 地上にいる時の処理 --- //
     if (!player.isJumping)
     {
-        // 左右移動
-        if (input->GetKey(KEY_INPUT_A))  player.pos.x -= MOVE_SPEED;
-        if (input->GetKey(KEY_INPUT_D)) player.pos.x += MOVE_SPEED;
+        // 横移動（直接位置に加算）
+        player.pos.x += player.vel.x;
 
         // ジャンプ溜め開始
         if (input->GetKeyDown(KEY_INPUT_SPACE))
@@ -93,7 +96,10 @@ void Update(Player& player)
     }
     else
     {
-        // --- 空中の物理処理 --- //
+        // 空中移動（慣性付き）
+        player.pos.x += player.vel.x;
+
+        // 重力
         player.vel.y += GRAVITY;
         player.pos.y += player.vel.y;
 
@@ -103,9 +109,11 @@ void Update(Player& player)
             player.pos.y = GROUND_HEIGHT - 50.0f;
             player.isJumping = false;
             player.vel.y = 0.0f;
+            player.vel.x = 0.0f; // 着地時に横移動を止める（好みにより省略可能）
         }
     }
 }
+
 
 //=== 描画処理 ===//
 void Draw(const Player& player)

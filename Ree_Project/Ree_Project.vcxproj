@@ -132,6 +132,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="Object\Item\Item.cpp" />
+    <ClCompile Include="Object\Object.cpp" />
+    <ClCompile Include="Object\ObjectManager.cpp" />
+    <ClCompile Include="Object\Platform\Platform.cpp" />
+    <ClCompile Include="Object\Player\Player.cpp" />
+    <ClCompile Include="Scene\Result.cpp" />
+    <ClCompile Include="Scene\SceneBase.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\InGame.cpp" />
+    <ClCompile Include="Scene\Title.cpp" />
     <ClCompile Include="Utility\Collision.cpp" />
     <ClCompile Include="Utility\InputControl.cpp" />
     <ClCompile Include="Utility\ResourceManager.cpp" />
@@ -139,6 +149,16 @@
     <ClCompile Include="Utility\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Object\Item\Item.h" />
+    <ClInclude Include="Object\Object.h" />
+    <ClInclude Include="Object\ObjectManager.h" />
+    <ClInclude Include="Object\Platform\Platform.h" />
+    <ClInclude Include="Object\Player\Player.h" />
+    <ClInclude Include="Scene\Result.h" />
+    <ClInclude Include="Scene\SceneBase.h" />
+    <ClInclude Include="Scene\SceneManager.h" />
+    <ClInclude Include="Scene\InGame.h" />
+    <ClInclude Include="Scene\Title.h" />
     <ClInclude Include="Utility\Collision.h" />
     <ClInclude Include="Utility\Enum.h" />
     <ClInclude Include="Utility\InputControl.h" />
