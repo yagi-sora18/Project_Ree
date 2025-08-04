@@ -18,19 +18,19 @@
     <ClCompile Include="AppMain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\InputControl.cpp">
+    <ClCompile Include="Utillity\InputControl.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\ResourceManager.cpp">
+    <ClCompile Include="Utillity\ResourceManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\ScoreManager.cpp">
+    <ClCompile Include="Utillity\ScoreManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\Vector2D.cpp">
+    <ClCompile Include="Utillity\Vector2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\Collision.cpp">
+    <ClCompile Include="Utillity\Collision.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Scene\InGame.cpp">
@@ -65,25 +65,25 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Utility\InputControl.h">
+    <ClInclude Include="Utillity\InputControl.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\ResourceManager.h">
+    <ClInclude Include="Utillity\ResourceManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\ScoreManager.h">
+    <ClInclude Include="Utillity\ScoreManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\SingleTone.h">
+    <ClInclude Include="Utillity\SingleTone.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Vector2D.h">
+    <ClInclude Include="Utillity\Vector2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Collision.h">
+    <ClInclude Include="Utillity\Collision.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Enum.h">
+    <ClInclude Include="Utillity\Enum.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Scene\InGame.h">

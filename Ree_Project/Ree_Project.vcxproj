@@ -142,11 +142,11 @@
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\InGame.cpp" />
     <ClCompile Include="Scene\Title.cpp" />
-    <ClCompile Include="Utility\Collision.cpp" />
-    <ClCompile Include="Utility\InputControl.cpp" />
-    <ClCompile Include="Utility\ResourceManager.cpp" />
-    <ClCompile Include="Utility\ScoreManager.cpp" />
-    <ClCompile Include="Utility\Vector2D.cpp" />
+    <ClCompile Include="Utillity\Collision.cpp" />
+    <ClCompile Include="Utillity\InputControl.cpp" />
+    <ClCompile Include="Utillity\ResourceManager.cpp" />
+    <ClCompile Include="Utillity\ScoreManager.cpp" />
+    <ClCompile Include="Utillity\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object\Item\Item.h" />
@@ -159,13 +159,13 @@
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\InGame.h" />
     <ClInclude Include="Scene\Title.h" />
-    <ClInclude Include="Utility\Collision.h" />
-    <ClInclude Include="Utility\Enum.h" />
-    <ClInclude Include="Utility\InputControl.h" />
-    <ClInclude Include="Utility\ResourceManager.h" />
-    <ClInclude Include="Utility\ScoreManager.h" />
-    <ClInclude Include="Utility\SingleTone.h" />
-    <ClInclude Include="Utility\Vector2D.h" />
+    <ClInclude Include="Utillity\Collision.h" />
+    <ClInclude Include="Utillity\Enum.h" />
+    <ClInclude Include="Utillity\InputControl.h" />
+    <ClInclude Include="Utillity\ResourceManager.h" />
+    <ClInclude Include="Utillity\ScoreManager.h" />
+    <ClInclude Include="Utillity\SingleTone.h" />
+    <ClInclude Include="Utillity\Vector2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
