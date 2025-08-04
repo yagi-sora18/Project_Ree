@@ -1,8 +1,9 @@
 #include "Player.h"
 #include "../../Utillity/InputControl.h"
+#include "../../Object/Platform/Platform.h"
+#include "../../Utillity/Collision.h"
 #include "DxLib.h"
 
-const int GROUND_HEIGHT = 400;
 const float GRAVITY = 0.5f;
 const float JUMP_POWER_MIN = 5.0f;
 const float JUMP_POWER_MAX = 20.0f;
@@ -11,25 +12,22 @@ const float MOVE_SPEED = 2.0f;
 
 Player::Player()
 {
-    pos = Vector2D(300.0f, GROUND_HEIGHT - 50.0f);
+    pos = Vector2D(300.0f, 1000.0f);
     vel = Vector2D(0.0f, 0.0f);
-    isJumping = false;
+    isJumping = true;
     isCharging = false;
     chargePower = 0.0f;
+    UpdateCollision();
 }
 
 void Player::Update()
 {
     auto input = InputControl::GetInstance();
 
-    // â°à⁄ìÆ
-    if (input->GetKey(KEY_INPUT_A)) vel.x = -MOVE_SPEED;
-    else if (input->GetKey(KEY_INPUT_D)) vel.x = MOVE_SPEED;
-    else vel.x = 0.0f;
-
     if (!isJumping)
     {
-        pos.x += vel.x;
+        if (input->GetKey(KEY_INPUT_A)) pos.x -= MOVE_SPEED;
+        if (input->GetKey(KEY_INPUT_D)) pos.x += MOVE_SPEED;
 
         if (input->GetKeyDown(KEY_INPUT_SPACE)) {
             isCharging = true;
@@ -47,28 +45,54 @@ void Player::Update()
             vel.y = -chargePower;
         }
     }
-    else
+}
+
+void Player::ApplyPhysics(const std::vector<Platform>& platforms)
+{
+    if (isJumping)
     {
-        pos.x += vel.x;
         vel.y += GRAVITY;
         pos.y += vel.y;
 
-        if (pos.y >= GROUND_HEIGHT - 50.0f) {
-            pos.y = GROUND_HEIGHT - 50.0f;
-            isJumping = false;
-            vel.y = 0.0f;
-            vel.x = 0.0f;
+        UpdateCollision();
+
+        for (const auto& platform : platforms)
+        {
+            if (IsCheckCollision(collision, platform.collision))
+            {
+                if (vel.y >= 0.0f)
+                {
+                    pos.y = platform.pos.y - 50; // ë´èÍÇÃè„Ç…çáÇÌÇπÇÈ
+                    vel.y = 0.0f;
+                    isJumping = false;
+                    UpdateCollision();
+                    break;
+                }
+            }
         }
     }
 }
 
-void Player::Draw() const
+void Player::UpdateCollision()
 {
-    DrawBox((int)pos.x, (int)pos.y, (int)(pos.x + 50), (int)(pos.y + 50), GetColor(255, 0, 0), TRUE);
+    collision.pivot = pos + Vector2D(25, 25);
+    collision.box_size = Vector2D(50, 50);
+    collision.point[0] = pos;
+    collision.point[1] = pos + Vector2D(50, 50);
+    collision.object_type = ePlayer;
+}
+
+void Player::Draw(int camera_y) const
+{
+    DrawBox((int)pos.x, (int)(pos.y - camera_y), (int)(pos.x + 50), (int)(pos.y + 50 - camera_y), GetColor(255, 0, 0), TRUE);
 
     if (isCharging) {
         int gaugeWidth = static_cast<int>((chargePower / JUMP_POWER_MAX) * 100);
-        DrawBox(10, 10, 10 + gaugeWidth, 30, GetColor(255, 255, 0), TRUE);
+        int color = GetColor(
+            static_cast<int>((chargePower / JUMP_POWER_MAX) * 255),
+            static_cast<int>((1.0f - chargePower / JUMP_POWER_MAX) * 255),
+            0
+        );
+        DrawBox(10, 10, 10 + gaugeWidth, 30, color, TRUE);
     }
 }
-

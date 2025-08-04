@@ -132,7 +132,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
-    <ClCompile Include="Object\Item\Item.cpp" />
+    <ClCompile Include="Map\MapLoader.cpp" />
+    <ClCompile Include="Object\Item\Coin.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Object\ObjectManager.cpp" />
     <ClCompile Include="Object\Platform\Platform.cpp" />
@@ -149,7 +150,8 @@
     <ClCompile Include="Utillity\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Object\Item\Item.h" />
+    <ClInclude Include="Map\MapLoader.h" />
+    <ClInclude Include="Object\Item\Coin.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="Object\ObjectManager.h" />
     <ClInclude Include="Object\Platform\Platform.h" />
