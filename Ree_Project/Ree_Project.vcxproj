@@ -132,7 +132,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
-    <ClCompile Include="Scene\End.cpp" />
     <ClCompile Include="Map\MapLoader.cpp" />
     <ClCompile Include="Object\Item\Coin.cpp" />
     <ClCompile Include="Object\Object.cpp" />
@@ -151,7 +150,6 @@
     <ClCompile Include="Utillity\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scene\End.h" />
     <ClInclude Include="Map\MapLoader.h" />
     <ClInclude Include="Object\Item\Coin.h" />
     <ClInclude Include="Object\Object.h" />
