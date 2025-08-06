@@ -3,7 +3,6 @@
 #include "../Object/Player/Player.h"
 #include "../Object/Platform/Platform.h"
 #include "../Object/Item/Coin.h"
-#include <vector>
 
 class InGame : public SceneBase
 {
@@ -11,16 +10,12 @@ public:
     InGame();
     ~InGame();
 
-    void Initialize() override;
-    eSceneType Update(float delta_second) override;
+    void Update() override;
     void Draw() override;
-    void Finalize() override;
-    eSceneType GetNowSceneType() const override;
 
 private:
     Player player;
     std::vector<Platform> platforms;
     std::vector<Coin> coins;
     int camera_y;
-    eSceneType now_scene;
 };

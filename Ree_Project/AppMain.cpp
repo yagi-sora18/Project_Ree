@@ -1,24 +1,27 @@
 #include "DxLib.h"
-#include "SceneManager.h"
+#include "Scene/SceneManager.h"
+
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-    // 画面設定
     ChangeWindowMode(TRUE);
-    SetGraphMode(640, 480, 32);
+    SetGraphMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32);
     if (DxLib_Init() == -1) return -1;
     SetDrawScreen(DX_SCREEN_BACK);
 
-    // ゲームループ
+    // 最初のシーンをタイトルに設定
+    SceneManager::GetInstance()->ChangeScene(eSceneType::eTitle);
+
     while (ProcessMessage() == 0 && ClearDrawScreen() == 0)
     {
-        // 現在のシーンを更新・描画
-        SceneManager::GetInstance()->Update();
+        if (SceneManager::GetInstance()->Update(1.0f / 60.0f)) break;
         SceneManager::GetInstance()->Draw();
-
         ScreenFlip();
     }
 
+    SceneManager::GetInstance()->Finalize();
     DxLib_End();
     return 0;
 }

@@ -5,18 +5,20 @@
 #include "SceneManager.h"
 #include "DxLib.h"
 
-InGame::InGame() : now_scene(eSceneType::eInGame) {}
-
-InGame::~InGame() {}
-
-void InGame::Initialize()
+InGame::InGame()
 {
+    // プレイヤーとマップの初期化
     LoadMapFromCSV("Resource/Map/map01.csv", platforms, coins);
     player = Player();
     camera_y = 0;
 }
 
-eSceneType InGame::Update(float delta_second)
+InGame::~InGame()
+{
+    // 現時点で特に破棄するリソースはなし
+}
+
+void InGame::Update()
 {
     InputControl::GetInstance()->Update();
 
@@ -29,26 +31,14 @@ eSceneType InGame::Update(float delta_second)
 
     // ゲームクリア判定（例：プレイヤーが最上部に到達）
     if (player.pos.y < 100) {
-        now_scene = eSceneType::eResult;
+        SceneManager::GetInstance()->ChangeScene(new Result());
     }
-
-    return now_scene;
 }
 
 void InGame::Draw()
 {
+    // 描画順：足場 → コイン → プレイヤー
     for (auto& p : platforms) p.Draw(camera_y);
     for (auto& c : coins) c.Draw(camera_y);
     player.Draw(camera_y);
-}
-
-void InGame::Finalize()
-{
-    platforms.clear();
-    coins.clear();
-}
-
-eSceneType InGame::GetNowSceneType() const
-{
-    return now_scene;
 }

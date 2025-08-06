@@ -139,7 +139,6 @@
     <ClCompile Include="Object\Platform\Platform.cpp" />
     <ClCompile Include="Object\Player\Player.cpp" />
     <ClCompile Include="Scene\Result.cpp" />
-    <ClCompile Include="Scene\SceneBase.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\InGame.cpp" />
     <ClCompile Include="Scene\Title.cpp" />

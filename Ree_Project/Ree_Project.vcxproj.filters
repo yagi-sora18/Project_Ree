@@ -42,9 +42,6 @@
     <ClCompile Include="Scene\Title.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\SceneBase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Scene\SceneManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
