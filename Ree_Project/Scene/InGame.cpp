@@ -5,47 +5,77 @@
 #include "SceneManager.h"
 #include "DxLib.h"
 
-InGame::InGame() : now_scene(eSceneType::eInGame) {}
+InGame::InGame() : player(nullptr), now_scene(eSceneType::eInGame), camera_y(0) {}
 
 InGame::~InGame() {}
 
 void InGame::Initialize()
 {
-    LoadMapFromCSV("Resource/Map/map01.csv", platforms, coins);
-    player = Player();
+    player = new Player();
+    object_manager.Add(player);
+
+    // 一時的に Platform / Coin を仮のvectorで読み込む
+    std::vector<Platform> temp_platforms;
+    std::vector<Coin> temp_coins;
+    LoadMapFromCSV("Resource/Map/map01.csv", temp_platforms, temp_coins);
+
+    for (auto& p : temp_platforms) {
+        object_manager.Add(new Platform(p.pos.x, p.pos.y, p.width, p.height));
+    }
+
+    for (auto& c : temp_coins) {
+        object_manager.Add(new Coin(c.pos.x, c.pos.y));
+    }
+
     camera_y = 0;
 }
 
 eSceneType InGame::Update(float delta_second)
 {
-    InputControl::GetInstance()->Update();
+    InputControl* input = InputControl::GetInstance();
 
-    player.Update();
-    player.ApplyPhysics(platforms);
+    // === Enterキー押下でリザルトへ遷移（追加処理） ===
+    if (input->GetKeyDown(KEY_INPUT_RETURN)) {
+        next_scene = eSceneType::eResult;
+        return next_scene;
+    }
 
-    // カメラ追従処理
-    camera_y = static_cast<int>(player.pos.y) - 240; // SCREEN_HEIGHT / 2
+    //プレイヤー更新
+    player->Update(delta_second);
+
+    // Platformだけ抽出して物理処理
+    std::vector<Object*> platforms;
+    for (auto* obj : object_manager.GetObjects()) {
+        if (dynamic_cast<Platform*>(obj)) {
+            platforms.push_back(obj);
+        }
+    }
+
+    player->ApplyPhysics(platforms);
+
+    // カメラ追従
+    camera_y = static_cast<int>(player->pos.y) - 240;
     if (camera_y < 0) camera_y = 0;
 
-    // ゲームクリア判定（例：プレイヤーが最上部に到達）
-    if (player.pos.y < 100) {
-        now_scene = eSceneType::eResult;
-    }
+    // 全オブジェクト更新
+    object_manager.UpdateAll(delta_second);
+
+    //// ゴール処理（仮：Y位置が100より上でクリア）
+    //if (player->pos.y < 100) {
+    //    now_scene = eSceneType::eResult;
+    //}
 
     return now_scene;
 }
 
 void InGame::Draw()
 {
-    for (auto& p : platforms) p.Draw(camera_y);
-    for (auto& c : coins) c.Draw(camera_y);
-    player.Draw(camera_y);
+    object_manager.DrawAll(camera_y);
 }
 
 void InGame::Finalize()
 {
-    platforms.clear();
-    coins.clear();
+    object_manager.ClearAll();
 }
 
 eSceneType InGame::GetNowSceneType() const

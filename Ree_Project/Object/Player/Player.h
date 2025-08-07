@@ -1,13 +1,14 @@
 #pragma once
 #include "../../Utillity/Vector2D.h"
 #include "../../Utillity/Collision.h"
+
+#include "../Object.h"
 #include <vector>
 
 class Platform;
 
-class Player {
+class Player : public Object {
 public:
-    Vector2D pos;
     Vector2D vel;
     bool isJumping;
     bool isCharging;
@@ -15,8 +16,8 @@ public:
     Collision collision;
 
     Player();
-    void Update();
-    void ApplyPhysics(const std::vector<Platform>& platforms);
+    void Update(float delta_time) override;
+    void ApplyPhysics(const std::vector<Object*>& platforms);
     void UpdateCollision();
-    void Draw(int camera_y) const;
+    void Draw(int camera_y) const override;
 };

@@ -20,7 +20,7 @@ Player::Player()
     UpdateCollision();
 }
 
-void Player::Update()
+void Player::Update(float delta_time)
 {
     auto input = InputControl::GetInstance();
 
@@ -47,27 +47,28 @@ void Player::Update()
     }
 }
 
-void Player::ApplyPhysics(const std::vector<Platform>& platforms)
+void Player::ApplyPhysics(const std::vector<Object*>& objects)
 {
-    if (isJumping)
+    if (!isJumping) return;
+
+    vel.y += 0.5f;
+    pos.y += vel.y;
+    UpdateCollision();
+
+    for (const auto& obj : objects)
     {
-        vel.y += GRAVITY;
-        pos.y += vel.y;
+        Platform* platform = dynamic_cast<Platform*>(obj);
+        if (!platform) continue;
 
-        UpdateCollision();
-
-        for (const auto& platform : platforms)
+        if (IsCheckCollision(collision, platform->collision))
         {
-            if (IsCheckCollision(collision, platform.collision))
+            if (vel.y >= 0.0f)
             {
-                if (vel.y >= 0.0f)
-                {
-                    pos.y = platform.pos.y - 50; // ‘«ê‚Ìã‚É‡‚í‚¹‚é
-                    vel.y = 0.0f;
-                    isJumping = false;
-                    UpdateCollision();
-                    break;
-                }
+                pos.y = platform->pos.y - 50;
+                vel.y = 0.0f;
+                isJumping = false;
+                UpdateCollision();
+                break;
             }
         }
     }

@@ -1,8 +1,8 @@
 #include "Platform.h"
 
 Platform::Platform(float x, float y, int w, int h)
-    : pos(x, y), width(w), height(h)
-{
+    : width(w), height(h) {
+    pos = Vector2D(x, y);
     UpdateCollision();
 }
 

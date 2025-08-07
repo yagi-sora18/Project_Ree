@@ -1,17 +1,17 @@
 #pragma once
 #include "../../Utillity/Vector2D.h"
 #include "../../Utillity/Collision.h"
+#include "../Object.h"
 #include "DxLib.h"
 
-class Platform
+class Platform : public Object
 {
 public:
-    Vector2D pos;
     int width;
     int height;
     Collision collision;
 
     Platform(float x, float y, int w, int h);
     void UpdateCollision();
-    void Draw(int camera_y) const;
+    void Draw(int camera_y) const override;
 };

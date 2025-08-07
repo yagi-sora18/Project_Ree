@@ -1,6 +1,9 @@
 #include "Coin.h"
 
-Coin::Coin(float x, float y) : pos(x, y), collected(false) {}
+Coin::Coin(float x, float y) {
+    pos = Vector2D(x, y);
+    collected = false;
+}
 
 void Coin::Draw(int camera_y) const {
     if (!collected) {
