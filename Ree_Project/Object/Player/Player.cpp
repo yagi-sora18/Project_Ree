@@ -4,11 +4,20 @@
 #include "../../Utillity/Collision.h"
 #include "DxLib.h"
 
-const float GRAVITY = 0.5f;
-const float JUMP_POWER_MIN = 5.0f;
-const float JUMP_POWER_MAX = 20.0f;
-const float CHARGE_SPEED = 0.3f;
-const float MOVE_SPEED = 2.0f;
+// --- 調整用パラメータ ---
+static const float GRAVITY = 0.5f;
+static const float MOVE_ACCEL_GROUND = 0.6f;  // 地上での加速
+static const float MOVE_ACCEL_AIR = 0.3f;  // 空中での加速
+static const float MAX_SPEED_X = 4.0f;  // 横最大速度
+static const float GROUND_FRICTION = 0.80f; // 地上で入力が無いときの減速(乗算)
+static const float AIR_DRAG = 0.98f; // 空中の抵抗(乗算)
+
+static const float JUMP_POWER_MIN = 5.0f;
+static const float JUMP_POWER_MAX = 20.0f;
+static const float CHARGE_SPEED = 0.3f;
+
+static const float PLAYER_W = 50.0f;
+static const float PLAYER_H = 50.0f;
 
 Player::Player()
 {
@@ -20,72 +29,124 @@ Player::Player()
     UpdateCollision();
 }
 
-void Player::Update(float delta_time)
+void Player::Update(float /*delta_time*/)
 {
     auto input = InputControl::GetInstance();
 
-    if (!isJumping)
-    {
-        if (input->GetKey(KEY_INPUT_A)) pos.x -= MOVE_SPEED;
-        if (input->GetKey(KEY_INPUT_D)) pos.x += MOVE_SPEED;
+    // --- 横入力（地上/空中で加速度を変える） ---
+    float ax = 0.0f;
+    const bool left = input->GetKey(KEY_INPUT_A);
+    const bool right = input->GetKey(KEY_INPUT_D);
+    const float accel = isJumping ? MOVE_ACCEL_AIR : MOVE_ACCEL_GROUND;
 
+    if (left)  ax -= accel;
+    if (right) ax += accel;
+
+    // 速度更新（空中でも継続して慣性が乗る）
+    vel.x += ax;
+
+    // 速度制限
+    if (vel.x > MAX_SPEED_X) vel.x = MAX_SPEED_X;
+    if (vel.x < -MAX_SPEED_X) vel.x = -MAX_SPEED_X;
+
+    // 減速（地上は強め、空中は弱め）
+    if (!left && !right) {
+        if (isJumping) vel.x *= AIR_DRAG;
+        else           vel.x *= GROUND_FRICTION;
+    }
+
+    // --- 溜めジャンプ（地上のみ） ---
+    if (!isJumping) {
         if (input->GetKeyDown(KEY_INPUT_SPACE)) {
             isCharging = true;
             chargePower = JUMP_POWER_MIN;
         }
-
         if (isCharging && input->GetKey(KEY_INPUT_SPACE)) {
             chargePower += CHARGE_SPEED;
             if (chargePower > JUMP_POWER_MAX) chargePower = JUMP_POWER_MAX;
         }
-
         if (isCharging && input->GetKeyUp(KEY_INPUT_SPACE)) {
             isJumping = true;
             isCharging = false;
-            vel.y = -chargePower;
+            vel.y = -chargePower; // 上向きへ初速度
         }
     }
 }
 
 void Player::ApplyPhysics(const std::vector<Object*>& objects)
 {
-    if (!isJumping) return;
-
-    vel.y += 0.5f;
-    pos.y += vel.y;
+    // --- まず横移動を反映（慣性が効く） ---
+    pos.x += vel.x;
     UpdateCollision();
 
-    for (const auto& obj : objects)
+    // --- 「地上に立っているか」を確認 ---
+    // 少しだけ下に押し当てて足場があるかを見る（1px）
+    bool onGround = false;
     {
-        Platform* platform = dynamic_cast<Platform*>(obj);
-        if (!platform) continue;
+        float savedY = pos.y;
+        pos.y += 1.0f;
+        UpdateCollision();
 
-        if (IsCheckCollision(collision, platform->collision))
-        {
-            if (vel.y >= 0.0f)
-            {
-                pos.y = platform->pos.y - 50;
-                vel.y = 0.0f;
-                isJumping = false;
-                UpdateCollision();
+        for (const auto& obj : objects) {
+            auto* platform = dynamic_cast<Platform*>(obj);
+            if (!platform) continue;
+            if (IsCheckCollision(collision, platform->collision)) {
+                onGround = true;
                 break;
             }
         }
+        // 元に戻す
+        pos.y = savedY;
+        UpdateCollision();
+    }
+
+    // 足場からはみ出していたら落下開始
+    if (!onGround && !isJumping) {
+        isJumping = true;
+    }
+
+    // --- 縦方向の物理 ---
+    if (isJumping) {
+        vel.y += GRAVITY;    // 重力加速度
+        pos.y += vel.y;      // 位置更新
+        UpdateCollision();
+
+        // 足場と当たったら着地
+        for (const auto& obj : objects) {
+            auto* platform = dynamic_cast<Platform*>(obj);
+            if (!platform) continue;
+
+            if (IsCheckCollision(collision, platform->collision)) {
+                if (vel.y >= 0.0f) { // 上昇中は無視、下降中のみ着地
+                    pos.y = platform->pos.y - PLAYER_H; // 天面に揃える
+                    vel.y = 0.0f;
+                    isJumping = false;
+                    UpdateCollision();
+                }
+                break;
+            }
+        }
+    }
+    else {
+        // 地上にいる時は縦速度を常に0に保つ
+        vel.y = 0.0f;
     }
 }
 
 void Player::UpdateCollision()
 {
-    collision.pivot = pos + Vector2D(25, 25);
-    collision.box_size = Vector2D(50, 50);
+    collision.pivot = pos + Vector2D(PLAYER_W * 0.5f, PLAYER_H * 0.5f);
+    collision.box_size = Vector2D(PLAYER_W, PLAYER_H);
     collision.point[0] = pos;
-    collision.point[1] = pos + Vector2D(50, 50);
+    collision.point[1] = pos + Vector2D(PLAYER_W, PLAYER_H);
     collision.object_type = ePlayer;
 }
 
 void Player::Draw(int camera_y) const
 {
-    DrawBox((int)pos.x, (int)(pos.y - camera_y), (int)(pos.x + 50), (int)(pos.y + 50 - camera_y), GetColor(255, 0, 0), TRUE);
+    DrawBox((int)pos.x, (int)(pos.y - camera_y),
+        (int)(pos.x + PLAYER_W), (int)(pos.y + PLAYER_H - camera_y),
+        GetColor(255, 0, 0), TRUE);
 
     if (isCharging) {
         int gaugeWidth = static_cast<int>((chargePower / JUMP_POWER_MAX) * 100);
