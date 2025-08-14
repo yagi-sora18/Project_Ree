@@ -5,7 +5,7 @@
 #include "DxLib.h"
 
 // --- 調整用パラメータ ---
-static const float GRAVITY = 0.5f;
+static const float GRAVITY = 0.8f;
 static const float MOVE_ACCEL_GROUND = 0.6f;  // 地上での加速
 static const float MOVE_ACCEL_AIR = 0.3f;  // 空中での加速
 static const float MAX_SPEED_X = 4.0f;  // 横最大速度
@@ -29,7 +29,7 @@ Player::Player()
     UpdateCollision();
 }
 
-void Player::Update(float /*delta_time*/)
+void Player::Update(float delta_time)
 {
     auto input = InputControl::GetInstance();
 
@@ -149,12 +149,17 @@ void Player::Draw(int camera_y) const
         GetColor(255, 0, 0), TRUE);
 
     if (isCharging) {
-        int gaugeWidth = static_cast<int>((chargePower / JUMP_POWER_MAX) * 100);
+        int gaugeHeight = static_cast<int>((chargePower / JUMP_POWER_MAX) * 100);
         int color = GetColor(
             static_cast<int>((chargePower / JUMP_POWER_MAX) * 255),
             static_cast<int>((1.0f - chargePower / JUMP_POWER_MAX) * 255),
             0
         );
-        DrawBox(10, 10, 10 + gaugeWidth, 30, color, TRUE);
+        int gaugeX = static_cast<int>(pos.x - 10);
+        int gaugeY = static_cast<int>(pos.y - gaugeHeight - 10 - camera_y);
+
+        DrawBox(gaugeX, gaugeY,
+            gaugeX + 10, gaugeY + gaugeHeight,
+            color, TRUE);
     }
 }
