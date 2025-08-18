@@ -4,6 +4,7 @@
 #include "Result.h"
 #include "SceneManager.h"
 #include "../Object/ObjectManager.h"
+#include"../Object/Item/Coin.h"
 #include "DxLib.h"
 
 InGame::InGame() : player(nullptr), now_scene(eSceneType::eInGame), camera_y(0) {}
@@ -54,20 +55,29 @@ eSceneType InGame::Update(float delta_second)
         }
     }
 
-    // 全オブジェクト更新前にコイン取得チェック
+    // === コイン取得判定 ===
     for (auto* obj : object_manager.GetObjects()) {
         auto* coin = dynamic_cast<Coin*>(obj);
         if (!coin || coin->collected) continue;
 
-        // プレイヤーとコインの簡易距離判定（半径15px）
-        float dx = player->pos.x - coin->pos.x;
-        float dy = player->pos.y - coin->pos.y;
+        // プレイヤーとの距離で判定
+        float dx = (player->pos.x + 25) - coin->pos.x; // プレイヤー中心 ? pos + 半分
+        float dy = (player->pos.y + 25) - coin->pos.y;
         float dist2 = dx * dx + dy * dy;
-        if (dist2 < (15 * 15)) {
+
+        // プレイヤー半径25 + コイン半径10 = 35
+        if (dist2 < (35 * 35)) {
+            coin->collected = true;
+            object_manager.AddScore(10);
+        }
+
+        if (IsCheckCollision(player->collision, coin->collision)) {
             coin->collected = true;
             object_manager.AddScore(10);
         }
     }
+
+
 
 
     player->ApplyPhysics(platforms);
