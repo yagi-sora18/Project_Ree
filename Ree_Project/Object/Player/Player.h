@@ -15,6 +15,7 @@ public:
     float chargePower;
     Collision collision;
 
+
     Player();
     void Update(float delta_time) override;
     void ApplyPhysics(const std::vector<Object*>& platforms);

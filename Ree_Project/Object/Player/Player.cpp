@@ -2,6 +2,8 @@
 #include "../../Utillity/InputControl.h"
 #include "../../Object/Platform/Platform.h"
 #include "../../Utillity/Collision.h"
+#include "../../Object/Item/Coin.h"
+#include "../ObjectManager.h"
 #include "DxLib.h"
 
 // --- 調整用パラメータ ---
@@ -33,6 +35,26 @@ void Player::Update(float delta_time)
 {
     auto input = InputControl::GetInstance();
 
+    // --- コイン取得処理 ---
+    {
+        // ObjectManager のオブジェクト一覧を走査
+        extern ObjectManager objectManager; // グローバルで管理している場合
+        for (auto* obj : objectManager.GetObjects()) {
+            auto* coin = dynamic_cast<Coin*>(obj);
+            if (!coin || coin->collected) continue;
+
+            if (IsCheckCollision(collision, Collision{
+                coin->pos + Vector2D(10, 10),
+                Vector2D(20, 20),
+                { coin->pos, coin->pos + Vector2D(20, 20) },
+                eCastle // 適当なタイプ
+                })) {
+                coin->collected = true;
+                objectManager.AddScore(10); // スコア加算
+            }
+        }
+    }
+
     // --- 横入力（地上/空中で加速度を変える） ---
     float ax = 0.0f;
     const bool left = input->GetKey(KEY_INPUT_A);
@@ -42,20 +64,15 @@ void Player::Update(float delta_time)
     if (left)  ax -= accel;
     if (right) ax += accel;
 
-    // 速度更新（空中でも継続して慣性が乗る）
     vel.x += ax;
-
-    // 速度制限
     if (vel.x > MAX_SPEED_X) vel.x = MAX_SPEED_X;
     if (vel.x < -MAX_SPEED_X) vel.x = -MAX_SPEED_X;
 
-    // 減速（地上は強め、空中は弱め）
     if (!left && !right) {
         if (isJumping) vel.x *= AIR_DRAG;
         else           vel.x *= GROUND_FRICTION;
     }
 
-    // --- 溜めジャンプ（地上のみ） ---
     if (!isJumping) {
         if (input->GetKeyDown(KEY_INPUT_SPACE)) {
             isCharging = true;
@@ -68,10 +85,11 @@ void Player::Update(float delta_time)
         if (isCharging && input->GetKeyUp(KEY_INPUT_SPACE)) {
             isJumping = true;
             isCharging = false;
-            vel.y = -chargePower; // 上向きへ初速度
+            vel.y = -chargePower;
         }
     }
 }
+
 
 void Player::ApplyPhysics(const std::vector<Object*>& objects)
 {

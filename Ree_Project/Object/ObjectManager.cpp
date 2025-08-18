@@ -1,6 +1,8 @@
 #include "ObjectManager.h"
 #include "Player/Player.h"  // Åö í«â¡
 
+
+
 ObjectManager::~ObjectManager() {
     ClearAll();
 }
@@ -47,6 +49,7 @@ void ObjectManager::DrawAll(int camera_y) {
         }
     }
 }
+
 
 void ObjectManager::ClearAll() {
     for (auto* obj : objects) {

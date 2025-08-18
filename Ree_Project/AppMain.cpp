@@ -1,8 +1,13 @@
 #include "DxLib.h"
 #include "Scene/SceneManager.h"
+#include "Object/ObjectManager.h"
+
+ObjectManager objectManager; // ŽÀ‘Ì
+
 
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
+
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
