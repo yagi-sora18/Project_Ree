@@ -1,15 +1,15 @@
-#include "Platform.h"
+#include "Wall.h"
 
 static const float GAME_OFF_X = 250.0f;
 
 
-Platform::Platform(float x, float y, int w, int h)
+Wall::Wall(float x, float y, int w, int h)
     : width(w), height(h) {
     pos = Vector2D(x, y);
     UpdateCollision();
 }
 
-void Platform::UpdateCollision()
+void Wall::UpdateCollision()
 {
     collision.pivot = pos + Vector2D(width / 2.0f, height / 2.0f);
     collision.box_size = Vector2D(width, height);
@@ -18,9 +18,10 @@ void Platform::UpdateCollision()
     collision.object_type = eCastle;
 }
 
-void Platform::Draw(int camera_y) const
+void Wall::Draw(int camera_y) const
 {
     DrawBox((int)(pos.x + GAME_OFF_X), (int)(pos.y - camera_y),
         (int)(pos.x + width + GAME_OFF_X), (int)(pos.y + height - camera_y),
         GetColor(100, 100, 255), TRUE);
 }
+

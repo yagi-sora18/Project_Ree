@@ -1,5 +1,8 @@
 #include "Coin.h"
 
+static const float GAME_OFF_X = 250.0f;
+
+
 Coin::Coin(float x, float y) {
     pos = Vector2D(x, y);
     collected = false;
@@ -17,17 +20,9 @@ void Coin::Update(float delta_time) {
     collision.pivot = pos + Vector2D(10, 10);
 }
 
-void Coin::Draw(int camera_y) const {
-    if (!collected) {
-        DrawCircle(
-            (int)pos.x,
-            (int)(pos.y - camera_y),
-            10,
-            GetColor(255, 255, 0),
-            TRUE
-        );
-    }
+void Coin::Draw(int camera_y) const
+{
+    if (collected) return;
+    DrawCircle((int)(pos.x + GAME_OFF_X), (int)(pos.y - camera_y),
+        10, GetColor(255, 255, 0), TRUE);
 }
-
-
-

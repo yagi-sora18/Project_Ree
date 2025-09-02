@@ -7,6 +7,16 @@
 #include"../Object/Item/Coin.h"
 #include "DxLib.h"
 
+// 画面レイアウト情報
+namespace {
+    constexpr int SCREEN_W = 1300;
+    constexpr int SCREEN_H = 800;
+    constexpr int UI_WIDTH = 250;           // 左のUIレーン
+    constexpr int GAME_W = SCREEN_W - UI_WIDTH; // 480
+    constexpr int GAME_OFF_X = UI_WIDTH;      // 描画のXオフセット = +160
+}
+
+
 InGame::InGame() : player(nullptr), now_scene(eSceneType::eInGame), camera_y(0) {}
 
 InGame::~InGame() {}
@@ -19,7 +29,8 @@ void InGame::Initialize()
     // 一時的に Platform / Coin を仮のvectorで読み込む
     std::vector<Platform> temp_platforms;
     std::vector<Coin> temp_coins;
-    LoadMapFromCSV("Resource/Map/map01.csv", temp_platforms, temp_coins);
+    std::vector<Wall> temp_wall;
+    LoadMapFromCSV("Resource/Map/map01.csv", temp_platforms, temp_coins, temp_wall);
 
     for (auto& p : temp_platforms) {
         object_manager.Add(new Platform(p.pos.x, p.pos.y, p.width, p.height));
@@ -29,6 +40,9 @@ void InGame::Initialize()
         object_manager.Add(new Coin(c.pos.x, c.pos.y));
     }
 
+    for (auto& p : temp_wall) {
+        object_manager.Add(new Platform(p.pos.x, p.pos.y, p.width, p.height));
+    }
 
 
     camera_y = 0;
@@ -77,13 +91,10 @@ eSceneType InGame::Update(float delta_second)
         }
     }
 
-
-
-
     player->ApplyPhysics(platforms);
 
-    // カメラ追従
-    camera_y = static_cast<int>(player->pos.y) - 240;
+    // カメラ追従（縦中心は画面の半分）
+    camera_y = static_cast<int>(player->pos.y) - (SCREEN_H / 2);
     if (camera_y < 0) camera_y = 0;
 
     // 全オブジェクト更新
@@ -101,6 +112,12 @@ eSceneType InGame::Update(float delta_second)
 
 void InGame::Draw()
 {
+    // 左UIレーン
+    DrawBox(0, 0, UI_WIDTH, SCREEN_H, GetColor(20, 20, 20), TRUE);
+
+    // 右のゲーム領域（任意で塗る）
+    DrawBox(UI_WIDTH, 0, SCREEN_W, SCREEN_H, GetColor(0, 0, 0), TRUE);
+
     object_manager.DrawAll(camera_y);
 
     DrawFormatString(20, 20, GetColor(255, 255, 255),

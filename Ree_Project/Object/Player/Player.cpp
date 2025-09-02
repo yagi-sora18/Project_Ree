@@ -21,6 +21,9 @@ static const float CHARGE_SPEED = 0.3f;
 static const float PLAYER_W = 50.0f;
 static const float PLAYER_H = 50.0f;
 
+static const float GAME_OFF_X = 250.0f;
+
+
 Player::Player()
 {
     pos = Vector2D(300.0f, 1000.0f);
@@ -162,8 +165,8 @@ void Player::UpdateCollision()
 
 void Player::Draw(int camera_y) const
 {
-    DrawBox((int)pos.x, (int)(pos.y - camera_y),
-        (int)(pos.x + PLAYER_W), (int)(pos.y + PLAYER_H - camera_y),
+    DrawBox((int)(pos.x + GAME_OFF_X), (int)(pos.y - camera_y),
+        (int)(pos.x + 50 + GAME_OFF_X), (int)(pos.y + 50 - camera_y),
         GetColor(255, 0, 0), TRUE);
 
     if (isCharging) {

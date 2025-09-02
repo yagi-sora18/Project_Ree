@@ -146,6 +146,7 @@
     <ClCompile Include="Utillity\ResourceManager.cpp" />
     <ClCompile Include="Utillity\ScoreManager.cpp" />
     <ClCompile Include="Utillity\Vector2D.cpp" />
+    <ClCompile Include="Object\Wall\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map\MapLoader.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Utillity\ScoreManager.h" />
     <ClInclude Include="Utillity\SingleTone.h" />
     <ClInclude Include="Utillity\Vector2D.h" />
+    <ClInclude Include="Object\Wall\Wall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

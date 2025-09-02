@@ -4,8 +4,8 @@
 
 ObjectManager objectManager; // グローバル実体（必要なら残す）
 
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 1300;
+const int SCREEN_HEIGHT = 800;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
