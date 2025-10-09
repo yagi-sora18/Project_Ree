@@ -1,24 +1,82 @@
-#include "InGame.h"
+ï»¿#include "InGame.h"
+#include <cstring>
 #include "../Map/MapLoader.h"
 #include "../Utillity/InputControl.h"
 #include "Result.h"
 #include "SceneManager.h"
 #include "../Object/ObjectManager.h"
-#include"../Object/Item/Coin.h"
+#include "../Object/Item/Coin.h"
 #include "DxLib.h"
 
-// ‰æ–ÊƒŒƒCƒAƒEƒgî•ñ
+// ç”»é¢ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆæƒ…å ±
 namespace {
     constexpr int SCREEN_W = 1300;
     constexpr int SCREEN_H = 800;
-    constexpr int UI_WIDTH = 250;           // ¶‚ÌUIƒŒ[ƒ“
-    constexpr int GAME_W = SCREEN_W - UI_WIDTH; // 480
-    constexpr int GAME_OFF_X = UI_WIDTH;      // •`‰æ‚ÌXƒIƒtƒZƒbƒg = +160
+    constexpr int UI_WIDTH = 250;                 // å·¦ã®UIãƒ¬ãƒ¼ãƒ³å¹…
+    constexpr int GAME_W = SCREEN_W - UI_WIDTH; // å³ã®ã‚²ãƒ¼ãƒ é ˜åŸŸ
+    constexpr int GAME_OFF_X = UI_WIDTH;            // ã‚²ãƒ¼ãƒ æç”»ã®Xã‚ªãƒ•ã‚»ãƒƒãƒˆ
 }
 
+// ==== Keyboard Help (A / D / SPACE) ==============================
+static void DrawKeycap(int x, int y, int w, const char* label, bool on) {
+    int bg = on ? GetColor(70, 160, 255) : GetColor(40, 45, 55);
+    int fg = on ? GetColor(255, 255, 255) : GetColor(200, 205, 215);
+    DrawBox(x, y, x + w, y + 32, bg, TRUE);
+    DrawBox(x, y, x + w, y + 32, GetColor(90, 90, 110), FALSE);
+    int tx = x + (w - (int)strlen(label) * 8) / 2;
+    int ty = y + 8;
+    DrawString(tx, ty, label, fg);
+}
+
+static void DrawKeyHelp(int baseX, int baseY, int width) {
+    // ã‚¿ã‚¤ãƒˆãƒ«
+    DrawString(baseX, baseY, "KEYS", GetColor(230, 230, 240));
+
+    // æ 
+    int bx = baseX, by = baseY + 20, bw = width, bh = 88;
+    DrawBox(bx, by, bx + bw, by + bh, GetColor(28, 30, 38), TRUE);
+    DrawBox(bx, by, bx + bw, by + bh, GetColor(90, 90, 110), FALSE);
+
+    // ã‚­ãƒ¼çŠ¶æ…‹ï¼ˆDxLibï¼‰
+    bool kA = (CheckHitKey(KEY_INPUT_A) != 0);
+    bool kD = (CheckHitKey(KEY_INPUT_D) != 0);
+    bool kSPACE = (CheckHitKey(KEY_INPUT_SPACE) != 0);
+
+    // ä¸Šæ®µï¼šã‚­ãƒ¼ã‚­ãƒ£ãƒƒãƒ—
+    int x = bx + 10, y = by + 10;
+    DrawKeycap(x, y, 36, "A", kA);     // å·¦ç§»å‹•
+    DrawKeycap(x + 46, y, 36, "D", kD);     // å³ç§»å‹•
+    DrawKeycap(x + 92, y, 72, "SPACE", kSPACE); // ã‚¸ãƒ£ãƒ³ãƒ—
+
+    // ä¸‹æ®µï¼šèª¬æ˜
+    int infoX = bx + 10, infoY = by + 50;
+    int c = GetColor(200, 205, 215);
+    DrawString(infoX, infoY, "A : å·¦ç§»å‹•", c);
+    DrawString(infoX + 110, infoY, "D : å³ç§»å‹•", c);
+    DrawString(infoX + 210, infoY, "SPACE : ã‚¸ãƒ£ãƒ³ãƒ—", c);
+}
+
+// ==== å·¦UIï¼ˆã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ã¿ï¼‰ ====================================
+static void DrawLeftUI(int score) {
+    // å·¦UIã®èƒŒæ™¯å¸¯
+    DrawBox(0, 0, UI_WIDTH, SCREEN_H, GetColor(28, 30, 38), TRUE);
+    // å³ç¸ãƒ©ã‚¤ãƒ³
+    DrawBox(UI_WIDTH - 1, 0, UI_WIDTH, SCREEN_H, GetColor(90, 90, 110), TRUE);
+
+    int uiX = 16, uiY = 16;
+
+    // ã‚¹ã‚³ã‚¢è¡¨ç¤º
+    DrawFormatString(uiX, uiY, GetColor(230, 230, 240), "SCORE : %d", score);
+    uiY += 28;
+
+    // ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ˜ãƒ«ãƒ—ï¼ˆA / D / SPACE ã®ã¿ï¼‰
+    DrawKeyHelp(uiX, uiY, UI_WIDTH - 32);
+    uiY += 20 + 88 + 16;
+}
+
+// =================================================================
 
 InGame::InGame() : player(nullptr), now_scene(eSceneType::eInGame), camera_y(0) {}
-
 InGame::~InGame() {}
 
 void InGame::Initialize()
@@ -26,24 +84,22 @@ void InGame::Initialize()
     player = new Player();
     object_manager.Add(player);
 
-    // ˆê“I‚É Platform / Coin ‚ğ‰¼‚Ìvector‚Å“Ç‚İ‚Ş
+    // ãƒãƒƒãƒ—èª­ã¿è¾¼ã¿ï¼ˆPlatform / Coin / Wallï¼‰
     std::vector<Platform> temp_platforms;
-    std::vector<Coin> temp_coins;
-    std::vector<Wall> temp_wall;
+    std::vector<Coin>     temp_coins;
+    std::vector<Wall>     temp_wall;
     LoadMapFromCSV("Resource/Map/map01.csv", temp_platforms, temp_coins, temp_wall);
 
     for (auto& p : temp_platforms) {
         object_manager.Add(new Platform(p.pos.x, p.pos.y, p.width, p.height));
     }
-
     for (auto& c : temp_coins) {
         object_manager.Add(new Coin(c.pos.x, c.pos.y));
     }
-
-    for (auto& p : temp_wall) {
-        object_manager.Add(new Platform(p.pos.x, p.pos.y, p.width, p.height));
+    for (auto& w : temp_wall) {
+        // å£ã‚‚ Platform ã¨ã—ã¦æç”»ï¼å½“ãŸã‚Šåˆ¤å®šï¼ˆå¿…è¦ãªã‚‰ Wall ã‚¯ãƒ©ã‚¹å´ã«å·®ã—æ›¿ãˆï¼‰
+        object_manager.Add(new Platform(w.pos.x, w.pos.y, w.width, w.height));
     }
-
 
     camera_y = 0;
 }
@@ -52,16 +108,16 @@ eSceneType InGame::Update(float delta_second)
 {
     InputControl* input = InputControl::GetInstance();
 
-    // === EnterƒL[‰Ÿ‰º‚ÅƒŠƒUƒ‹ƒg‚Ö‘JˆÚi’Ç‰Áˆ—j ===
+    // Enterã§ãƒªã‚¶ãƒ«ãƒˆã¸
     if (input->GetKeyDown(KEY_INPUT_RETURN)) {
         next_scene = eSceneType::eResult;
         return next_scene;
     }
 
-    //ƒvƒŒƒCƒ„[XV
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ›´æ–°
     player->Update(delta_second);
 
-    // Platform‚¾‚¯’Šo‚µ‚Ä•¨—ˆ—
+    // PlatformæŠ½å‡º
     std::vector<Object*> platforms;
     for (auto* obj : object_manager.GetObjects()) {
         if (dynamic_cast<Platform*>(obj)) {
@@ -69,63 +125,51 @@ eSceneType InGame::Update(float delta_second)
         }
     }
 
-    // === ƒRƒCƒ“æ“¾”»’è ===
+    // ã‚³ã‚¤ãƒ³å–å¾—
     for (auto* obj : object_manager.GetObjects()) {
         auto* coin = dynamic_cast<Coin*>(obj);
         if (!coin || coin->collected) continue;
 
-        // ƒvƒŒƒCƒ„[‚Æ‚Ì‹——£‚Å”»’è
-        float dx = (player->pos.x + 25) - coin->pos.x; // ƒvƒŒƒCƒ„[’†S ? pos + ”¼•ª
+        // è·é›¢ã§ã®ç°¡æ˜“åˆ¤å®š
+        float dx = (player->pos.x + 25) - coin->pos.x;
         float dy = (player->pos.y + 25) - coin->pos.y;
         float dist2 = dx * dx + dy * dy;
-
-        // ƒvƒŒƒCƒ„[”¼Œa25 + ƒRƒCƒ“”¼Œa10 = 35
         if (dist2 < (35 * 35)) {
             coin->collected = true;
             object_manager.AddScore(10);
         }
 
+        // å½“ãŸã‚Šåˆ¤å®šï¼ˆCollisionãŒã‚ã‚‹å ´åˆï¼‰
         if (IsCheckCollision(player->collision, coin->collision)) {
             coin->collected = true;
             object_manager.AddScore(10);
         }
     }
 
+    // ç‰©ç†
     player->ApplyPhysics(platforms);
 
-    // ƒJƒƒ‰’Ç]ic’†S‚Í‰æ–Ê‚Ì”¼•ªj
+    // ã‚«ãƒ¡ãƒ©ï¼ˆç¸¦æ–¹å‘è¿½å¾“ï¼‰
     camera_y = static_cast<int>(player->pos.y) - (SCREEN_H / 2);
     if (camera_y < 0) camera_y = 0;
 
-    // ‘SƒIƒuƒWƒFƒNƒgXV
+    // å…¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæ›´æ–°
     object_manager.UpdateAll(delta_second);
 
-    //// ƒS[ƒ‹ˆ—i‰¼FYˆÊ’u‚ª100‚æ‚èã‚ÅƒNƒŠƒAj
-    //if (player->pos.y < 100) {
-    //    now_scene = eSceneType::eResult;
-    //}
-
     return now_scene;
-
-
 }
 
 void InGame::Draw()
 {
-    // ¶UIƒŒ[ƒ“
-    DrawBox(0, 0, UI_WIDTH, SCREEN_H, GetColor(20, 20, 20), TRUE);
-
-    // ‰E‚ÌƒQ[ƒ€—Ìˆæi”CˆÓ‚Å“h‚éj
+    // å³ã®ã‚²ãƒ¼ãƒ é ˜åŸŸã‚’å¡—ã‚‹ï¼ˆä»»æ„ï¼‰
     DrawBox(UI_WIDTH, 0, SCREEN_W, SCREEN_H, GetColor(0, 0, 0), TRUE);
 
+    // ã‚²ãƒ¼ãƒ æç”»ï¼ˆå†…éƒ¨ã§ GAME_OFF_X ã‚’ä½¿ã£ã¦ã„ãªã„ãªã‚‰ã€å„æç”»å´ã§ +UI_WIDTH ã‚’åŠ ãˆã‚‹è¨­è¨ˆã«ï¼‰
     object_manager.DrawAll(camera_y);
 
-    DrawFormatString(20, 20, GetColor(255, 255, 255),
-        "SCORE: %d", object_manager.GetScore());
+    // å·¦UIï¼ˆã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ã¿ï¼‰
+    DrawLeftUI(object_manager.GetScore());
 }
-
-
-
 
 void InGame::Finalize()
 {

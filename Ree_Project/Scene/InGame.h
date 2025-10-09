@@ -24,4 +24,18 @@ private:
     int camera_y;
     eSceneType now_scene;
     eSceneType next_scene;
+
+
+    // InGame.h （private に追加）
+    struct MiniMapState {
+        int x, y, w, h;           // 左パネル内の表示矩形
+        float minx, miny, maxx, maxy; // ワールド境界（自動更新）
+    };
+    MiniMapState mmini;
+
+    // 追加メソッド宣言
+    void MiniMap_SetRect(int x, int y, int w, int h);
+    void MiniMap_UpdateBounds();
+    void MiniMap_Draw() const;
+
 };
