@@ -84,11 +84,16 @@ void InGame::Initialize()
     player = new Player();
     object_manager.Add(player);
 
-    // マップ読み込み（Platform / Coin / Wall）
+    // マップ読み込み（Player/Platform / Coin / Wall）
+    std::vector<Player>   temp_player;
     std::vector<Platform> temp_platforms;
     std::vector<Coin>     temp_coins;
-    std::vector<Wall>     temp_wall;
-    LoadMapFromCSV("Resource/Map/map01.csv", temp_platforms, temp_coins, temp_wall);
+    std::vector<Wall>     temp_walls;
+    LoadMapFromCSV("Resource/Map/map01.csv",temp_player, temp_platforms, temp_coins, temp_walls);
+
+    for (auto& P : temp_player) {
+        object_manager.Add(new Player(P.pos.x, P.pos.y, P.width, P.height));
+    }
 
     for (auto& p : temp_platforms) {
         object_manager.Add(new Platform(p.pos.x, p.pos.y, p.width, p.height));
@@ -96,7 +101,7 @@ void InGame::Initialize()
     for (auto& c : temp_coins) {
         object_manager.Add(new Coin(c.pos.x, c.pos.y));
     }
-    for (auto& w : temp_wall) {
+    for (auto& w : temp_walls) {
         // 壁も Platform として描画／当たり判定（必要なら Wall クラス側に差し替え）
         object_manager.Add(new Platform(w.pos.x, w.pos.y, w.width, w.height));
     }

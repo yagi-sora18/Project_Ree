@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+
+#include "../Object/Player/Player.h"
 #include "../Object/Platform/Platform.h"
 #include "../Object/Item/Coin.h"  // Coinクラスのパス
 
@@ -9,9 +11,10 @@
 
 void LoadMapFromCSV(
     const std::string& filename,
+    std::vector<Player>& player,
     std::vector<Platform>& platforms,
     std::vector<Coin>& coins,
-    std::vector<Wall>& wall,
+    std::vector<Wall>& walls,
     int tile_size = 50)
 {
     std::ifstream file(filename);
@@ -24,7 +27,11 @@ void LoadMapFromCSV(
             float x = col * tile_size;
             float y = row * tile_size;
 
-            if (c == '#')
+            if (c == 'p')
+            {
+                player.emplace_back(x, y, tile_size, tile_size / 5);
+            }
+            else if (c == '#')
             {
                 platforms.emplace_back(x, y, tile_size, tile_size / 5);
             }
@@ -34,7 +41,7 @@ void LoadMapFromCSV(
             }
             else if (c == 'q')
             {
-                wall.emplace_back(x, y, tile_size / 5, tile_size);
+                walls.emplace_back(x, y, tile_size / 5, tile_size);
             }
         }
         ++row;
