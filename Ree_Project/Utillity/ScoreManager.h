@@ -1,14 +1,9 @@
 #pragma once
-
-class ScoreManager
-{
+class ScoreManager {
 public:
-	static ScoreManager* GetInstance();
-	void AddScore(int value);
-	int GetScore() const;
-
-
+	void Reset() { score = 0; }
+	void Add(int s) { score += s; }
+	int Get() const { return score; }
 private:
-	int score_;
-	ScoreManager();
+	int score{ 0 };
 };

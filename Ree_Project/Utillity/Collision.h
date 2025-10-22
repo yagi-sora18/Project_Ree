@@ -1,37 +1,29 @@
 #pragma once
 #include "Vector2D.h"
-#include<vector>
 
-enum eObjectType
-{
-	eBullet,
-	eCastle,
+
+enum EObjectType {
+	eUnknown = 0,
 	ePlayer,
-	eEnemy,
-	eBulletAim
+	ePlatform,
+	eCoin,
+	eWall,
 };
 
-enum eSide
-{
-	UP,
-	RIGHT,
-	DOWN,
-	LEFT,
-	NONE
+
+struct Collision {
+	Vector2D pivot; // 中心(または任意ピボット)
+	Vector2D box_size; // 幅高
+	Vector2D point[2]; // 左上[0], 右下[1]
+	EObjectType object_type{ eUnknown };
+
+
+	static bool IsCheckHitCollision(const Collision& a, const Collision& b);
 };
 
-class Collision
-{
-public:
-	Vector2D box_size;
-	Vector2D pivot;
-	Vector2D point[2];
-	eObjectType object_type;
-	std::vector<eObjectType> hit_object_type;
 
-	bool IsCheckHitTarget(eObjectType object_type) const;
-	bool IsCheckHitCollision(Collision target1, Collision target2);
-};
-bool IsCheckCollision(const Collision& c1, const Collision& c2);
-
-
+// 便利AABB（pointベース）
+inline bool IsCheckCollision(const Collision& a, const Collision& b) {
+	return !(a.point[1].x <= b.point[0].x || a.point[0].x >= b.point[1].x ||
+		a.point[1].y <= b.point[0].y || a.point[0].y >= b.point[1].y);
+}

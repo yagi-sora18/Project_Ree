@@ -1,26 +1,18 @@
 #include "Platform.h"
+#include <DxLib.h>
 
-static const float GAME_OFF_X = 250.0f;
+
+static constexpr float GAME_OFF_X = 250.0f; // ã§í âªêÑèß
 
 
-Platform::Platform(float x, float y, int w, int h)
-    : width(w), height(h) {
-    pos = Vector2D(x, y);
-    UpdateCollision();
-}
+//void Platform::Draw(int camera_y) {
+//	DrawBox((int)(pos.x - GAME_OFF_X), (int)(pos.y - camera_y),
+//		(int)(pos.x + width - GAME_OFF_X), (int)(pos.y + height - camera_y),
+//		GetColor(120, 120, 120), true);
+//}
 
-void Platform::UpdateCollision()
-{
-    collision.pivot = pos + Vector2D(width / 2.0f, height / 2.0f);
-    collision.box_size = Vector2D(width, height);
-    collision.point[0] = pos;
-    collision.point[1] = pos + Vector2D(width, height);
-    collision.object_type = eCastle;
-}
-
-void Platform::Draw(int camera_y) const
-{
-    DrawBox((int)(pos.x + GAME_OFF_X), (int)(pos.y - camera_y),
-        (int)(pos.x + width + GAME_OFF_X), (int)(pos.y + height - camera_y),
-        GetColor(100, 100, 255), TRUE);
+void Platform::Draw(int camera_x, int camera_y) {
+	DrawBox((int)(pos.x - camera_x), (int)(pos.y - camera_y),
+		+(int)(pos.x + width - camera_x), (int)(pos.y + height - camera_y),
+		GetColor(120, 120, 120), true);
 }

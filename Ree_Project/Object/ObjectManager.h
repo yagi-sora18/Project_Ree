@@ -1,25 +1,32 @@
 #pragma once
-#include <vector>       // ★ std::vector 用
-#include <algorithm>    // ★ std::remove_if 用
-#include "Object.h"     // ★ Object クラスを参照するため
+#include <vector>
+#include <algorithm>
+#include "Object.h"
+
 
 class ObjectManager {
-private:
-    std::vector<Object*> objects;
-    int score = 0; // スコア変数
-
 public:
-    ~ObjectManager();
+	~ObjectManager();
 
-    void Add(Object* obj);
-    void UpdateAll(float delta_time);
-    void DrawAll(int camera_y);
-    void ClearAll();
 
-    const std::vector<Object*>& GetObjects() const { return objects; }
+	void Add(Object* obj) { if (obj) objects.push_back(obj); }
+	void ClearAll();
 
-    // スコア操作
-    void AddScore(int value) { score += value; }
-    int GetScore() const { return score; }
-    void ResetScore() { score = 0; }
+
+	void UpdateAll(float dt);
+	//void DrawAll(int camera_y);
+	void DrawAll(int camera_x, int camera_y);
+
+
+	const std::vector<Object*>& GetObjects() const { return objects; }
+
+
+	// スコア（簡易）
+	void AddScore(int s) { score += s; }
+	int GetScore() const { return score; }
+
+
+private:
+	std::vector<Object*> objects;
+	int score{ 0 };
 };

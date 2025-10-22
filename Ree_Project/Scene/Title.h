@@ -1,16 +1,13 @@
 #pragma once
 #include "SceneBase.h"
 
-class Title : public SceneBase
-{
-private:
-    eSceneType next_scene;
 
+class Title : public SceneBase {
 public:
-    Title();
-    void Initialize() override;
-    eSceneType Update(float delta_second) override;
-    void Draw() override;
-    void Finalize() override;
-    eSceneType GetNowSceneType() const override;
+	void Initialize() override {}
+	void Update(float dt) override;
+	void Draw() override;
+	eSceneType Next() const override { return next; }
+private:
+	eSceneType next{ eSceneType::eTitle };
 };

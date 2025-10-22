@@ -1,17 +1,13 @@
 #pragma once
-#include "../../Utillity/Vector2D.h"
-#include "../../Utillity/Collision.h"
 #include "../Object.h"
-#include "DxLib.h"
 
-class Wall : public Object
-{
+
+class Wall : public Object {
 public:
-    int width;
-    int height;
-    Collision collision;
-
-    Wall(float x, float y, int w, int h);
-    void UpdateCollision();
-    void Draw(int camera_y) const override;
+	Wall(float x, float y, float w, float h) : Object(x, y, w, h) {
+		collision.object_type = eWall;
+	}
+	void Update(float) override { /* ê√ìIÇ»ÇÁâΩÇ‡ÇµÇ»Ç¢ */ }
+	//void Draw(int camera_y) override;
+	void Draw(int camera_x, int camera_y) override;
 };

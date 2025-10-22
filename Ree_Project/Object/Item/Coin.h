@@ -1,15 +1,15 @@
 #pragma once
-#include "../../Utillity/Vector2D.h"
-#include "../../Utillity/Collision.h"
 #include "../Object.h"
-#include "DxLib.h"
+
 
 class Coin : public Object {
 public:
-    bool collected;
-    Collision collision;
-
-    Coin(float x, float y);
-    void Update(float delta_time) override;
-    void Draw(int camera_y) const override;
+	bool collected{ false };
+	Coin(float x, float y, float w = 20.0f, float h = 20.0f)
+		: Object(x, y, w, h) {
+		collision.object_type = eCoin;
+	}
+	void Update(float dt) override;
+	//void Draw(int camera_y) override;
+	void Draw(int camera_x, int camera_y)override;
 };
