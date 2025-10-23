@@ -9,7 +9,8 @@ public:
 
     void Update(float dt) override;
     //void Draw(int camera_y) override;
-    void Draw(int camera_x, int camera_y) override;
+    //void Draw(int camera_x, int camera_y) override;
+    void Draw(int camera_x, int camera_y, int off_x, int off_y) override;
 
     // š dt •t‚«‚Ì•¨—BéŒ¾‚Æ’è‹`‚ğˆê’v‚³‚¹‚é
     void ApplyPhysics(const std::vector<class Object*>& objects, float dt);

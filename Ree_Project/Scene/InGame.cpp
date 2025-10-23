@@ -54,10 +54,34 @@ void InGame::Initialize() {
 	camera_y = 0; now_scene = eSceneType::eInGame; next_scene = eSceneType::eInGame;
 
 	// 画面サイズに合わせて右下端に寄せる
-	const int SCREEN_W = 1280;
+
+	/*const int SCREEN_W = 1280;
 	const int SCREEN_H = 720;
 	camera_x = Max(0, map_w_px - SCREEN_W);
-	camera_y = Max(0, map_h_px - SCREEN_H);
+	camera_y = Max(0, map_h_px - SCREEN_H);*/
+	const int SCREEN_W = 1280;
+	const int SCREEN_H = 720;
+
+	  // 横：マップが狭ければ camera_x=0 にして、右寄せオフセットを足す → 左側が空白になる
+	if (map_w_px >= SCREEN_W)
+	{
+		camera_x = Max(0, map_w_px - SCREEN_W); screen_off_x = 0;
+	}
+	else
+	{
+		camera_x = 0;screen_off_x = SCREEN_W - map_w_px;
+	}
+	// 縦：右下基準を維持（マップが低ければ下に寄せる＝上が空白）
+	if (map_h_px >= SCREEN_H)
+	{
+		camera_y = Max(0, map_h_px - SCREEN_H); screen_off_y = 0;
+	}
+	 else
+	{ 
+		camera_y = 0;
+		screen_off_y = SCREEN_H - map_h_px;
+	}
+
 	now_scene = eSceneType::eInGame; next_scene = eSceneType::eInGame;
 }
 
@@ -85,9 +109,19 @@ void InGame::Update(float dt) {
 	else if (py > DZ_BOT) camera_y += (py - DZ_BOT);
 
 	//if (camera_y < 0) camera_y = 0;
-	// 右下端へ寄せたい：横は常に右端に張り付け、両軸をクランプ
-	camera_x = Max(0, map_w_px - SCREEN_W);
+	//右端固定＆クランプ
+	/*camera_x = Max(0, map_w_px - SCREEN_W);
+	camera_y = Clamp(camera_y, 0, Max(0, map_h_px - SCREEN_H));*/
+
+	// 横：マップが画面より広いなら右端固定／狭いなら常に camera_x=0（左側空白を維持）
+
+	if (map_w_px >= SCREEN_W) camera_x = Max(0, map_w_px - SCREEN_W);
+	else camera_x = 0;
+
+	// 縦：クランプ（マップが低ければ camera_y=0 のまま、下寄せは screen_off_y で表現）
+
 	camera_y = Clamp(camera_y, 0, Max(0, map_h_px - SCREEN_H));
+
 
 	if (InputControl::GetInstance()->GetKeyDown(KEY_INPUT_ESCAPE)) {
 		next_scene = eSceneType::eResult;
@@ -95,9 +129,12 @@ void InGame::Update(float dt) {
 }
 
 
-void InGame::Draw() {
+void InGame::Draw()
+{
 	//object_manager.DrawAll(camera_y);
-	object_manager.DrawAll(camera_x, camera_y);
+	//object_manager.DrawAll(camera_x, camera_y);
+	object_manager.DrawAll(camera_x, camera_y, screen_off_x, screen_off_y);
+
 	DrawFormatString(20, 20, GetColor(255, 255, 255), "Score:%d", object_manager.GetScore());
 
 	// —— ここまででゲーム世界の描画が終わっている想定 ——
