@@ -12,10 +12,21 @@ void Coin::Update(float) {
 
 
 //void Coin::Draw(int camera_y) 
-void Coin::Draw(int camera_x, int camera_y) {
+
+//void Coin::Draw(int camera_x, int camera_y) {
+//	if (collected) return;
+//	//int x = (int)(pos.x - GAME_OFF_X);
+//	int x = (int)(pos.x - camera_x);
+//	int y = (int)(pos.y - camera_y);
+//	DrawCircle(x + (int)width / 2, y + (int)height / 2, (int)(width / 2), GetColor(255, 215, 0), true);
+//}
+
+void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
+{
 	if (collected) return;
-	//int x = (int)(pos.x - GAME_OFF_X);
-	int x = (int)(pos.x - camera_x);
-	int y = (int)(pos.y - camera_y);
+
+	int x = (int)(pos.x - camera_x + off_x);
+	int y = (int)(pos.y - camera_y + off_y);
+
 	DrawCircle(x + (int)width / 2, y + (int)height / 2, (int)(width / 2), GetColor(255, 215, 0), true);
 }

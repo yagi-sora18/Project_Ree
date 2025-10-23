@@ -97,8 +97,17 @@ void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt) {
 //        GetColor(200, 50, 50), TRUE);
 //}
 
-void Player::Draw(int camera_x, int camera_y) {
-    DrawBox((int)(pos.x - camera_x), (int)(pos.y - camera_y),
-        +(int)(pos.x + width - camera_x), (int)(pos.y + height - camera_y),
-        GetColor(200, 50, 50), TRUE);
+//void Player::Draw(int camera_x, int camera_y)
+//{
+//    DrawBox((int)(pos.x - camera_x), (int)(pos.y - camera_y),
+//        +(int)(pos.x + width - camera_x), (int)(pos.y + height - camera_y),
+//        GetColor(200, 50, 50), TRUE);
+//}
+
+void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
+{
+    DrawBox((int)(pos.x - camera_x + off_x), (int)(pos.y - camera_y + off_y),
+    (int)(pos.x + width - camera_x + off_x), (int)(pos.y + height - camera_y + off_y),
+
+    GetColor(200, 50, 50), TRUE);
 }

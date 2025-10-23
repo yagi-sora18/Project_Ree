@@ -13,7 +13,8 @@ public:
 
 	virtual void Update(float dt) {}
 	//virtual void Draw(int camera_y) {}
-	virtual void Draw(int camera_x, int camera_y) {}
+	//virtual void Draw(int camera_x, int camera_y) {}
+	virtual void Draw(int camera_x, int camera_y, int off_x, int off_y) {}
 
 
 	bool IsActive() const { return active; }

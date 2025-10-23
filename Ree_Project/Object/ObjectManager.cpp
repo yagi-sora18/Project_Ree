@@ -51,6 +51,8 @@ void ObjectManager::UpdateAll(float dt) {
 //	for (auto* obj : objects) if (obj && obj->IsActive()) obj->Draw(camera_y);
 //}
 
-void ObjectManager::DrawAll(int camera_x, int camera_y) {
-	for (auto* obj : objects) if (obj && obj->IsActive()) obj->Draw(camera_x, camera_y);
+void ObjectManager::DrawAll(int camera_x, int camera_y, int off_x, int off_y)
+{
+	//for (auto* obj : objects) if (obj && obj->IsActive()) obj->Draw(camera_x, camera_y);
+	for (auto* obj : objects) if (obj && obj->IsActive()) obj->Draw(camera_x, camera_y, off_x, off_y);
 }

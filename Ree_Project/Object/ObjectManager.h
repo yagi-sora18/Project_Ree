@@ -15,7 +15,8 @@ public:
 
 	void UpdateAll(float dt);
 	//void DrawAll(int camera_y);
-	void DrawAll(int camera_x, int camera_y);
+	//void DrawAll(int camera_x, int camera_y);
+	void DrawAll(int camera_x, int camera_y, int off_x, int off_y);
 
 
 	const std::vector<Object*>& GetObjects() const { return objects; }
