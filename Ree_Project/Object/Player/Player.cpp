@@ -23,21 +23,23 @@ Player::Player(float x, float y, float w, float h)
 void Player::Update(float dt) {
     auto in = InputControl::GetInstance();
 
-    // 水平入力
+    // --- 水平入力 ---
     float ax = 0.0f;
-    if (in->GetKey(KEY_INPUT_LEFT))  ax -= 1.0f;
-    if (in->GetKey(KEY_INPUT_RIGHT)) ax += 1.0f;
+    if (in->GetKey(KEY_INPUT_LEFT) || in->GetKey(KEY_INPUT_A))  ax -= 1.0f;
+    if (in->GetKey(KEY_INPUT_RIGHT) || in->GetKey(KEY_INPUT_D)) ax += 1.0f;
+    if (ax > 1.0f) ax = 1.0f;
+    if (ax < -1.0f) ax = -1.0f;
 
-    // チャージ開始/維持/解放
+    // --- チャージジャンプ処理（既存のまま） ---
     if (!isJumping && in->GetKeyDown(KEY_INPUT_SPACE)) { charging = true; charge_t = 0.0f; }
-    if (charging && in->GetKey(KEY_INPUT_SPACE)) { charge_t = (std::min)(charge_t + dt, CHARGE_MAX); } // ★ (std::min) でマクロ衝突回避
+    if (charging && in->GetKey(KEY_INPUT_SPACE)) { charge_t = (std::min)(charge_t + dt, CHARGE_MAX); }
     if (charging && in->GetKeyUp(KEY_INPUT_SPACE)) {
         float r = (CHARGE_MAX <= 0 ? 1.0f : (charge_t / CHARGE_MAX));
         float v0 = JUMP_V0_MIN + (JUMP_V0_MAX - JUMP_V0_MIN) * r;
         vel.y = -v0; isJumping = true; charging = false;
     }
 
-    // 加速/摩擦
+    // --- 加速/摩擦（既存のまま） ---
     float a_move = (isJumping ? A_AIR : A_GROUND) * ax;
     vel.x += a_move * dt;
 
@@ -47,6 +49,19 @@ void Player::Update(float dt) {
         else if (vel.x < 0) vel.x = (std::min)(0.0f, vel.x + fr);
     }
 }
+
+//    // Player.cpp  の  void Player::Update(float dt) 内、水平入力部分
+//    float ax = 0.0f;
+//
+//    // 既存（左右矢印）
+//    if (in->GetKey(KEY_INPUT_LEFT))  ax -= 1.0f;
+//    if (in->GetKey(KEY_INPUT_RIGHT)) ax += 1.0f;
+//
+//    // 追加（A / D）
+//    if (in->GetKey(KEY_INPUT_A))     ax -= 1.0f;
+//    if (in->GetKey(KEY_INPUT_D))     ax += 1.0f;
+//
+//}
 
 void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt) {
     // --- 水平 ---
@@ -88,6 +103,7 @@ void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt) {
         }
     }
 
+
     pos.y = newY; UpdateCollision();
 }
 
@@ -96,6 +112,7 @@ void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt) {
 //        (int)(pos.x + width - GAME_OFF_X), (int)(pos.y + height - camera_y),
 //        GetColor(200, 50, 50), TRUE);
 //}
+
 
 void Player::Draw(int camera_x, int camera_y) {
     DrawBox((int)(pos.x - camera_x), (int)(pos.y - camera_y),

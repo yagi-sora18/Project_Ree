@@ -99,4 +99,25 @@ void InGame::Draw() {
 	//object_manager.DrawAll(camera_y);
 	object_manager.DrawAll(camera_x, camera_y);
 	DrawFormatString(20, 20, GetColor(255, 255, 255), "Score:%d", object_manager.GetScore());
+
+	// —— ここまででゲーム世界の描画が終わっている想定 ——
+	int sw, sh, cc;
+	GetScreenState(&sw, &sh, &cc);
+
+	const int margin = 12;
+	const int panelW = 240;
+	const int panelH = 110;
+	const int px = sw - panelW - margin;
+	const int py = margin;
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 160);
+	DrawBox(px, py, px + panelW, py + panelH, GetColor(20, 25, 40), TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	DrawBox(px, py, px + panelW, py + panelH, GetColor(70, 80, 120), FALSE);
+
+	DrawString(px + 12, py + 10, _T("操作"), GetColor(220, 230, 255));
+	DrawString(px + 12, py + 42, _T("[A] 左に移動"), GetColor(200, 210, 230));
+	DrawString(px + 12, py + 42 + 22, _T("[D] 右に移動"), GetColor(200, 210, 230));
+	DrawString(px + 12, py + 42 + 44, _T("[SPACE] ジャンプ"), GetColor(200, 210, 230));
+
 }
