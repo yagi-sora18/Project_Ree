@@ -4,6 +4,8 @@
 #include "Object.h"
 
 
+class Player;
+
 class ObjectManager {
 public:
 	~ObjectManager();
@@ -25,6 +27,8 @@ public:
 	// スコア（簡易）
 	void AddScore(int s) { score += s; }
 	int GetScore() const { return score; }
+
+	Player* GetPlayer() const;
 
 
 private:

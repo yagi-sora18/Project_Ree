@@ -12,6 +12,7 @@
 #include "../../Object/Platform/Platform.h"
 #include "../../Object/Wall/Wall.h"
 #include "../../Utillity/Collision.h"
+#include "../../Object/ObjectManager.h"
 
 static constexpr float GAME_OFF_X = 250.0f;
 

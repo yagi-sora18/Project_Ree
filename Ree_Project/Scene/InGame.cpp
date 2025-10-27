@@ -137,24 +137,39 @@ void InGame::Draw()
 
 	DrawFormatString(20, 20, GetColor(255, 255, 255), "Score:%d", object_manager.GetScore());
 
-	// —— ここまででゲーム世界の描画が終わっている想定 ——
+	// ここまでは同じ
 	int sw, sh, cc;
 	GetScreenState(&sw, &sh, &cc);
 
 	const int margin = 12;
-	const int panelW = 240;
+	const int panelW = 240;   // 元の幅
 	const int panelH = 110;
-	const int px = sw - panelW - margin;
-	const int py = margin;
 
+	// 配置とサイズの微調整
+	const int offsetY = 30;    // 少しだけ下に
+	const int trimRight = 40;   // 右側を短く（px からの幅を縮める）
+
+	// 左上基準
+	const int px = margin;
+	const int py = margin + offsetY;
+
+	// 実際に使うボックスの右端（短くする）
+	const int boxLeft = px;
+	const int boxTop = py;
+	const int boxRight = px + panelW - trimRight;
+	const int boxBottom = py + panelH;
+
+	// ブレンド＆パネル描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 160);
-	DrawBox(px, py, px + panelW, py + panelH, GetColor(20, 25, 40), TRUE);
+	DrawBox(boxLeft, boxTop, boxRight, boxBottom, GetColor(20, 25, 40), TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	DrawBox(px, py, px + panelW, py + panelH, GetColor(70, 80, 120), FALSE);
+	DrawBox(boxLeft, boxTop, boxRight, boxBottom, GetColor(70, 80, 120), FALSE);
 
-	DrawString(px + 12, py + 10, _T("操作"), GetColor(220, 230, 255));
-	DrawString(px + 12, py + 42, _T("[A] 左に移動"), GetColor(200, 210, 230));
-	DrawString(px + 12, py + 42 + 22, _T("[D] 右に移動"), GetColor(200, 210, 230));
-	DrawString(px + 12, py + 42 + 44, _T("[SPACE] ジャンプ"), GetColor(200, 210, 230));
+	// テキストは左上からの相対でそのまま
+	DrawString(boxLeft + 12, boxTop + 10, _T("操作"), GetColor(220, 230, 255));
+	DrawString(boxLeft + 12, boxTop + 42, _T("[A] 左に移動"), GetColor(200, 210, 230));
+	DrawString(boxLeft + 12, boxTop + 64, _T("[D] 右に移動"), GetColor(200, 210, 230));
+	DrawString(boxLeft + 12, boxTop + 86, _T("[SPACE] ジャンプ"), GetColor(200, 210, 230));
+
 
 }
