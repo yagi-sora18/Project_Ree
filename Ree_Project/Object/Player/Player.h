@@ -1,5 +1,5 @@
-#pragma once
-#include <vector>          // š ‚±‚ê‚ª–³‚­‚Ä std::vector –¢’è‹`‚É‚È‚Á‚Ä‚¢‚Ü‚µ‚½
+ï»¿#pragma once
+#include <vector>          // â˜… ã“ã‚ŒãŒç„¡ãã¦ std::vector æœªå®šç¾©ã«ãªã£ã¦ã„ã¾ã—ãŸ
 #include <algorithm>
 #include "../Object.h"
 
@@ -12,21 +12,26 @@ public:
     //void Draw(int camera_x, int camera_y) override;
     void Draw(int camera_x, int camera_y, int off_x, int off_y) override;
 
-    // š dt •t‚«‚Ì•¨—BéŒ¾‚Æ’è‹`‚ğˆê’v‚³‚¹‚é
+    // â˜… dt ä»˜ãã®ç‰©ç†ã€‚å®£è¨€ã¨å®šç¾©ã‚’ä¸€è‡´ã•ã›ã‚‹
     void ApplyPhysics(const std::vector<class Object*>& objects, float dt);
+
+    // ã‚²ãƒ¼ã‚¸ã®å……å¡«ç‡ï¼ˆ0.0ã€œ1.0ï¼‰ã€‚å……é›»ä¸­ã®ã¿å€¤ãŒå‡ºã¦ã€éå……é›»æ™‚ã¯0ã‚’è¿”ã™
+    float GetChargeRatio() const;
+    bool  IsCharging() const { return charging; }
+
 
 private:
     Vector2D vel{ 0,0 };
     bool isJumping{ false };
 
-    // ƒ`ƒƒ[ƒWƒWƒƒƒ“ƒv
+    // ãƒãƒ£ãƒ¼ã‚¸ã‚¸ãƒ£ãƒ³ãƒ—
     bool  charging{ false };
     float charge_t{ 0.0f };
     static constexpr float CHARGE_MAX = 0.6f;
     static constexpr float JUMP_V0_MIN = 650.0f;
     static constexpr float JUMP_V0_MAX = 1700.0f;
 
-    // ˆÚ“®/•¨—
+    // ç§»å‹•/ç‰©ç†
     static constexpr float A_GROUND = 2800.0f;
     static constexpr float A_AIR = 600.0f;
     static constexpr float FRICTION_GROUND = 1800.0f;

@@ -112,3 +112,13 @@ void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
 
     GetColor(200, 50, 50), TRUE);
 }
+
+float Player::GetChargeRatio() const 
+{
+    if (!charging || CHARGE_MAX <= 0.0f) return 0.0f;
+
+    float r = charge_t / CHARGE_MAX;
+
+    return (r < 0.0f) ? 0.0f : (r > 1.0f ? 1.0f : r);
+
+}

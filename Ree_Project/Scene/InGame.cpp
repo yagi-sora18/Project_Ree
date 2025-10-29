@@ -17,6 +17,46 @@ template<typename T>
 static inline T Min(T a, T b) { return (a < b) ? a : b; }
 
 
+// 色補間ユーティリティ（0..1）
+static inline int LerpI(int a, int b, float t) 
+{
+	if (t < 0.0f) t = 0.0f; else if (t > 1.0f) t = 1.0f;
+
+	return a + (int)((b - a) * t);
+
+}
+
+// r∈[0,1]: 0→赤(255,0,0), 0.5→黄(255,255,0), 1→緑(0,255,0)
+static inline int GaugeColorFromRatio(float r) 
+{
+	if (r < 0.0f) r = 0.0f; else if (r > 1.0f) r = 1.0f;
+
+	int R, G;
+
+	if (r <= 0.5f) 
+	{
+		float t = r / 0.5f;          // 0→赤, 0.5→黄
+
+		R = 255;
+
+		G = LerpI(0, 255, t);
+
+	}
+	else 
+	{
+		float t = (r - 0.5f) / 0.5f; // 0.5→黄, 1→緑
+
+		R = LerpI(255, 0, t);
+
+		G = 255;
+
+	}
+
+	return GetColor(R, G, 0);
+
+}
+
+
 InGame::InGame() {}
 
 
@@ -131,6 +171,44 @@ void InGame::Update(float dt) {
 
 void InGame::Draw()
 {
+	// ===== 溜めゲージ（頭上UI） =====
+	const float r = player->GetChargeRatio();   // 0..1（充電中のみ>0）
+
+	// 表示位置（プレイヤー頭上）
+	const int gaugeW = 72;
+	const int gaugeH = 10;
+	const int marginUp = 12; // 頭から少し上
+	const int gx = (int)(player->pos.x - camera_x + screen_off_x + player->width * 0.5f - gaugeW * 0.5f);
+	const int gy = (int)(player->pos.y - camera_y + screen_off_y - marginUp - gaugeH);
+
+	// 画面外ならスキップ（軽いカリング）
+	const int SCREEN_W = 1280, SCREEN_H = 720;
+
+	if (!(gx > SCREEN_W || gy > SCREEN_H || gx + gaugeW < 0 || gy + gaugeH < 0))
+	{
+		// 背景（半透明）＋枠
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+		DrawBox(gx, gy, gx + gaugeW, gy + gaugeH, GetColor(20, 25, 40), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		DrawBox(gx, gy, gx + gaugeW, gy + gaugeH, GetColor(220, 220, 240), FALSE);
+
+		// 充填部分
+		const int fillW = (int)(gaugeW * r);
+
+		if (fillW > 0)
+		{
+			const int col = GaugeColorFromRatio(r); // 赤→黄→緑
+
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 220);
+
+			DrawBox(gx + 1, gy + 1, gx + 1 + fillW - 2, gy + gaugeH - 1, col, TRUE);
+
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		}
+	}
+
+
 	//object_manager.DrawAll(camera_y);
 	//object_manager.DrawAll(camera_x, camera_y);
 	object_manager.DrawAll(camera_x, camera_y, screen_off_x, screen_off_y);
