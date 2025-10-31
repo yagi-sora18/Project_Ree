@@ -3,6 +3,7 @@
 #include "../Object/Platform/Platform.h"
 #include "../Object/Item/Coin.h"
 #include "../Object/Wall/Wall.h"
+#include "../Object/Goal/Goal.h"
 #include "../Map/MapLoader.h"
 #include "../Utillity/InputControl.h"
 #include <algorithm>
@@ -69,16 +70,18 @@ void InGame::Initialize() {
 	std::vector<Platform> tPf;
 	std::vector<Coin> tC;
 	std::vector<Wall> tW;
+	std::vector<Goal> tG;
 
 
 	//LoadMapFromCSV("Resource/Map/map01.csv", tP, tPf, tC, tW);
 
-	LoadMapFromCSV("Resource/Map/map01.csv", tP, tPf, tC, tW, 50, &map_w_px, &map_h_px);
+	LoadMapFromCSV("Resource/Map/map01.csv", tP, tPf, tC, tW, tG, 50, &map_w_px, &map_h_px);
 
 
 	for (const auto& P : tPf) object_manager.Add(new Platform(P.pos.x, P.pos.y, P.width, P.height));
 	for (const auto& C : tC) object_manager.Add(new Coin(C.pos.x, C.pos.y, C.width, C.height));
 	for (const auto& W : tW) object_manager.Add(new Wall(W.pos.x, W.pos.y, W.width, W.height));
+	for (const auto& G : tG)  object_manager.Add(new Goal(G.pos.x, G.pos.y, G.width, G.height)); // ★ ゴール生成
 
 
 	if (!tP.empty()) {
@@ -162,6 +165,21 @@ void InGame::Update(float dt) {
 
 	camera_y = Clamp(camera_y, 0, Max(0, map_h_px - SCREEN_H));
 
+	// ★ ゴール到達チェック（Player と Goal のAABB）
+	{
+		for (auto* obj : object_manager.GetObjects()) 
+		{
+			if (!obj || !obj->IsActive()) continue;
+			if (obj->collision.object_type != eGoal) continue;
+			if (IsCheckCollision(player->collision, obj->collision)) 
+			{
+				next_scene = eSceneType::eResult;
+				break;
+
+			}
+			
+		}
+	}
 
 	if (InputControl::GetInstance()->GetKeyDown(KEY_INPUT_ESCAPE)) {
 		next_scene = eSceneType::eResult;

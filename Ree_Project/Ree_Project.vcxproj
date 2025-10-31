@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="Object\Goal\Goal.cpp" />
     <ClCompile Include="Object\Item\Coin.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Object\ObjectManager.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="Object\Wall\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Object\Goal\Goal.h" />
     <ClInclude Include="Map\MapLoader.h" />
     <ClInclude Include="Object\Item\Coin.h" />
     <ClInclude Include="Object\Object.h" />

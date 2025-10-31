@@ -7,6 +7,7 @@
 #include "../Object/Platform/Platform.h"
 #include "../Object/Item/Coin.h"
 #include "../Object/Wall/Wall.h"
+#include "../Object/Goal/Goal.h"
 
 
 inline void LoadMapFromCSV(
@@ -15,6 +16,7 @@ inline void LoadMapFromCSV(
 	std::vector<Platform>& platforms,
 	std::vector<Coin>& coins,
 	std::vector<Wall>& walls,
+	std::vector<Goal>& goals,
 	//int tile_size = 50)
 	int tile_size = 50,
 	int* out_map_w_px = nullptr,
@@ -32,11 +34,18 @@ inline void LoadMapFromCSV(
 			char ch = line[col];
 			float x = col * (float)tile_size;
 			float y = row * (float)tile_size;
-			switch (ch) {
+			switch (ch) 
+			{
 			case 'p': player.emplace_back(x, y, (float)tile_size, (float)tile_size); break;
+
 			case '#': platforms.emplace_back(x, y + (float)tile_size * 0.8f, (float)tile_size, (float)tile_size * 0.2f); break; // îñÇ¢ë´èÍ
+
 			case 'o': coins.emplace_back(x + (float)tile_size * 0.25f, y + (float)tile_size * 0.25f, (float)tile_size * 0.5f, (float)tile_size * 0.5f); break;
+
 			case 'q': walls.emplace_back(x, y, (float)tile_size, (float)tile_size); break;
+
+			case 'g': goals.emplace_back(x, y, (float)tile_size, (float)tile_size); break; // Åö ÉSÅ[Éã
+
 			default: break;
 			}
 		}

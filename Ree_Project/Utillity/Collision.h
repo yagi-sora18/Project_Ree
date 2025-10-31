@@ -8,6 +8,7 @@ enum EObjectType {
 	ePlatform,
 	eCoin,
 	eWall,
+	eGoal,
 };
 
 
