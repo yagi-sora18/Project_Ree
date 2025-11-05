@@ -27,7 +27,7 @@ static inline int LerpI(int a, int b, float t)
 
 }
 
-// r∈[0,1]: 0→赤(255,0,0), 0.5→黄(255,255,0), 1→緑(0,255,0)
+// 0→赤(255,0,0), 0.5→黄(255,255,0), 1→緑(0,255,0)
 static inline int GaugeColorFromRatio(float r) 
 {
 	if (r < 0.0f) r = 0.0f; else if (r > 1.0f) r = 1.0f;
@@ -84,11 +84,13 @@ void InGame::Initialize() {
 	for (const auto& G : tG)  object_manager.Add(new Goal(G.pos.x, G.pos.y, G.width, G.height)); // ★ ゴール生成
 
 
-	if (!tP.empty()) {
+	if (!tP.empty()) 
+	{
 		const auto& P = tP.front();
 		player = new Player(P.pos.x, P.pos.y, P.width, P.height);
 	}
-	else {
+	else 
+	{
 		player = new Player(300, 300, 50, 50);
 	}
 	object_manager.Add(player);
