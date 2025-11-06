@@ -39,8 +39,11 @@ void Player::Update(float dt) {
     }
 
     // ‰Á‘¬/–€C
-    float a_move = (isJumping ? A_AIR : A_GROUND) * ax;
+// ‰Á‘¬/–€Ci‚ä‚Á‚­‚è—§‚¿ã‚ª‚é”Åj
+    const float ACCEL_SCALE = 0.5f;  // 0.3?0.8‚Å’²®
+    float a_move = ((isJumping ? A_AIR : A_GROUND) * ACCEL_SCALE) * ax;
     vel.x += a_move * dt;
+
 
     float fr = (isJumping ? FRICTION_AIR : FRICTION_GROUND) * dt;
     if (ax == 0.0f) {
