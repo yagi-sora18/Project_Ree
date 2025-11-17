@@ -98,6 +98,14 @@ void InGame::Initialize() {
 
 	camera_y = 0; now_scene = eSceneType::eInGame; next_scene = eSceneType::eInGame;
 
+	// ★ 制限時間の初期値（5分 = 300秒）
+	time_limit = 300.0f;
+
+	// ★ 何点ごとに時間ボーナスを与えるか
+	//   ここでは「コイン1個 10点」として「50点ごとに+10秒」のイメージ
+	const int SCORE_PER_BONUS = 50;
+	next_time_bonus_score = SCORE_PER_BONUS;
+
 	// 画面サイズに合わせて右下端に寄せる
 
 	/*const int SCREEN_W = 1280;
@@ -167,6 +175,31 @@ void InGame::Update(float dt) {
 
 	camera_y = Clamp(camera_y, 0, Max(0, map_h_px - SCREEN_H));
 
+	// === 制限時間のカウントダウン ===
+	if (time_limit > 0.0f) {
+		time_limit -= dt;
+		if (time_limit <= 0.0f) {
+			time_limit = 0.0f;
+
+			// ★ 時間切れになったらリザルトへ
+			next_scene = eSceneType::eResult;
+		}
+	}
+
+	// === コイン一定量で時間ボーナス ===
+	{
+		const int SCORE_PER_BONUS = 50;   // 何点ごとに…
+		const float TIME_BONUS = 10.0f;   // 何秒増やすか
+
+		int currentScore = object_manager.GetScore();
+
+		// 一度にたくさんスコアを稼いだ場合に備えて while にしておく
+		while (currentScore >= next_time_bonus_score) {
+			time_limit += TIME_BONUS;
+			next_time_bonus_score += SCORE_PER_BONUS;
+		}
+	}
+
 	// ★ ゴール到達チェック（Player と Goal のAABB）
 	{
 		for (auto* obj : object_manager.GetObjects()) 
@@ -233,7 +266,25 @@ void InGame::Draw()
 	//object_manager.DrawAll(camera_x, camera_y);
 	object_manager.DrawAll(camera_x, camera_y, screen_off_x, screen_off_y);
 
+	// スコア表示
 	DrawFormatString(20, 20, GetColor(255, 255, 255), "Score:%d", object_manager.GetScore());
+
+	int white = GetColor(255, 255, 255);
+
+	// === 制限時間表示（スコアの下） ===
+	{
+		// 負になることがないように
+		int t = (int)time_limit;
+		if (t < 0) t = 0;
+
+		int minutes = t / 60;
+		int seconds = t % 60;
+
+		// 残り30秒以下で色を変えるなどしても良い（ここでは例として赤っぽく）
+		int timeColor = (t <= 30) ? GetColor(255, 80, 80) : white;
+
+		DrawFormatString(20, 40, timeColor, "Time: %02d:%02d", minutes, seconds);
+	}
 
 	// ここまでは同じ
 	int sw, sh, cc;
