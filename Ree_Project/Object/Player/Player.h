@@ -27,9 +27,9 @@ private:
     // チャージジャンプ
     bool  charging{ false };
     float charge_t{ 0.0f };
-    static constexpr float CHARGE_MAX = 0.6f;
+    static constexpr float CHARGE_MAX = 1.0f;
     static constexpr float JUMP_V0_MIN = 650.0f;
-    static constexpr float JUMP_V0_MAX = 1700.0f;
+    static constexpr float JUMP_V0_MAX = 1300.0f;
 
     // 移動/物理
     static constexpr float A_GROUND = 2800.0f;

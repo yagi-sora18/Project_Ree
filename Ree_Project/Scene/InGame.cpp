@@ -98,8 +98,8 @@ void InGame::Initialize() {
 
 	camera_y = 0; now_scene = eSceneType::eInGame; next_scene = eSceneType::eInGame;
 
-	// ★ 制限時間の初期値（5分 = 300秒）
-	time_limit = 300.0f;
+	// ★ 制限時間の初期値（1分 = 60秒）
+	time_limit = 6000.0f;
 
 	// ★ 何点ごとに時間ボーナスを与えるか
 	//   ここでは「コイン1個 10点」として「50点ごとに+10秒」のイメージ
@@ -281,7 +281,7 @@ void InGame::Draw()
 		int seconds = t % 60;
 
 		// 残り30秒以下で色を変えるなどしても良い（ここでは例として赤っぽく）
-		int timeColor = (t <= 30) ? GetColor(255, 80, 80) : white;
+		int timeColor = (t <= 20) ? GetColor(255, 80, 80) : white;
 
 		DrawFormatString(20, 40, timeColor, "Time: %02d:%02d", minutes, seconds);
 	}

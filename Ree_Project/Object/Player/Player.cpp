@@ -26,12 +26,12 @@ void Player::Update(float dt) {
 
     // 水平入力
     float ax = 0.0f;
-    if (in->GetKey(KEY_INPUT_LEFT))  ax -= 1.0f;
-    if (in->GetKey(KEY_INPUT_RIGHT)) ax += 1.0f;
+    if (in->GetKey(KEY_INPUT_A))  ax -= 1.0f;
+    if (in->GetKey(KEY_INPUT_D)) ax += 1.0f;
 
     // チャージ開始/維持/解放
     if (!isJumping && in->GetKeyDown(KEY_INPUT_SPACE)) { charging = true; charge_t = 0.0f; }
-    if (charging && in->GetKey(KEY_INPUT_SPACE)) { charge_t = (std::min)(charge_t + dt, CHARGE_MAX); } // ★ (std::min) でマクロ衝突回避
+    if (charging && in->GetKey(KEY_INPUT_SPACE)) { charge_t = (std::min)(charge_t + dt, CHARGE_MAX); } // (std::min) でマクロ衝突回避
     if (charging && in->GetKeyUp(KEY_INPUT_SPACE)) {
         float r = (CHARGE_MAX <= 0 ? 1.0f : (charge_t / CHARGE_MAX));
         float v0 = JUMP_V0_MIN + (JUMP_V0_MAX - JUMP_V0_MIN) * r;
