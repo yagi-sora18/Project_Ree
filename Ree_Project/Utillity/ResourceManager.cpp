@@ -1,173 +1,128 @@
 #include "ResourceManager.h"
-#include "DxLib.h"
 
-// 静的メンバ変数定義
-ResourceManager* ResourceManager::instance = nullptr; // 自クラスのポインタ
+// ---------- 単一画像 ----------
 
-/// <summary>
-/// インスタンス取得処理
-/// </summary>
-/// <returns>インスタンスのポインタを返却する</returns>
-ResourceManager* ResourceManager::GetInstance() {
-	// インスタンスが生成されていない場合、生成する
-	if (instance == nullptr) {
-		instance = new ResourceManager();
-	}
+int ResourceManager::LoadImage(const std::string& path)
+{
+    auto it = images_.find(path);
+    if (it != images_.end()) {
+        return it->second;
+    }
 
-	return instance;
+    int h = LoadGraph(path.c_str());
+    if (h == -1) {
+        // 読み込み失敗したら 0 を返す（必要ならログを出す）
+        return 0;
+    }
+    images_[path] = h;
+    return h;
 }
 
-/// <summary>
-/// インスタンス削除処理
-/// </summary>
-void ResourceManager::DeleteInstance() {
-	// インスタンスが生成されている場合、削除する
-	if (instance != nullptr) {
-		// 画像リソースの解放
-		instance->UnLoadImages();
-		// 音源リソースの解放
-		instance->UnLoadSounds();
-		// インスタンスを削除する
-		delete instance;
-		instance = nullptr;
-	}
+int ResourceManager::GetImage(const std::string& path) const
+{
+    auto it = images_.find(path);
+    if (it != images_.end()) {
+        return it->second;
+    }
+    return 0;
 }
 
-/// <summary>
-/// 画像取得処理
-/// </summary>
-/// <param name="file_name">ファイルパス</param>
-/// <param name="all_num">画像の分割総数</param>
-/// <param name="num_x">横の分割</param>
-/// <param name="num_y">縦の分割</param>
-/// <param name="size_x">横のサイズ(px)</param>
-/// <param name="size_y">縦のサイズ(px)</param>
-/// <returns>読み込んだ画像ハンドルのvector配列</returns>
-const std::vector<int>& ResourceManager::GetImages(std::string file_name, int all_num, int num_x, int num_y, int size_x, int size_y) {
-	// コンテナ内に画像データが無い場合、画像読み込みを行う
-	if (images_container.count(file_name) == NULL) {
-		// 分割読み込みを行う？行わない？
-		if (all_num == 1) {
-			// 分割読み込みを行わない
-			CreateImagesResource(file_name);
-		}
-		else {
-			// 分割読み込みを行う
-			CreateImagesResource(file_name, all_num, num_x, num_y, size_x, size_y);
-		}
-	}
+// ---------- アニメ用画像（複数ファイル） ----------
 
-	// コンテナ内のデータを返す
-	return images_container[file_name];
-}
-const std::vector<int>& ResourceManager::GetImages(const char* file_name, int all_num, int num_x, int num_y, int size_x, int size_y) {
-	return GetImages(std::string(file_name), all_num, num_x, num_y, size_x, size_y);
+const std::vector<int>& ResourceManager::LoadAnimImages(
+    const std::string& key,
+    const std::vector<std::string>& paths)
+{
+    auto it = anim_images_.find(key);
+    if (it != anim_images_.end()) {
+        return it->second;
+    }
+
+    std::vector<int> handles;
+    handles.reserve(paths.size());
+
+    for (const auto& p : paths) {
+        int h = LoadGraph(p.c_str());
+        if (h == -1) {
+            // 失敗したらダミーとして 0 を入れておく
+            handles.push_back(0);
+        }
+        else {
+            handles.push_back(h);
+        }
+    }
+
+    auto inserted = anim_images_.emplace(key, std::move(handles));
+    return inserted.first->second;
 }
 
-/// <summary>
-/// 音源取得処理
-/// </summary>
-/// <param name="file_path">音源のファイルパス</param>
-/// <returns>音源ハンドルデータ</returns>
-int ResourceManager::GetSounds(std::string file_path) {
-	// コンテナ内に指定ファイルが無ければ、生成する
-	if (sounds_container.count(file_path) == NULL) {
-		// 音源の読み込みを行う
-		CreateSoundsResource(file_path);
-	}
-
-	// コンテナ内のデータを返す
-	return sounds_container[file_path];
-}
-int ResourceManager::GetSounds(const char* file_path) {
-	return GetSounds(std::string(file_path));
+const std::vector<int>& ResourceManager::GetAnimImages(const std::string& key) const
+{
+    static const std::vector<int> empty; // 見つからなかったとき用
+    auto it = anim_images_.find(key);
+    if (it != anim_images_.end()) {
+        return it->second;
+    }
+    return empty;
 }
 
-/// <summary>
-/// 画像解放処理
-/// </summary>
-void ResourceManager::UnLoadImages() {
-	// コンテナ内に画像が無ければ、処理を終了する
-	if (images_container.size() == NULL) {
-		return;
-	}
+// ---------- サウンド（今はおまけ） ----------
 
-	// 全ての画像を削除
-	for (std::pair<std::string, std::vector<int>> value : images_container) {
-		DeleteSharingGraph(value.second[0]);
-		value.second.clear();
-	}
+int ResourceManager::LoadSound(const std::string& path)
+{
+    auto it = sounds_.find(path);
+    if (it != sounds_.end()) {
+        return it->second;
+    }
 
-	// コンテナを解放
-	images_container.clear();
+    int h = LoadSoundMem(path.c_str());
+    if (h == -1) {
+        return 0;
+    }
+    sounds_[path] = h;
+    return h;
 }
 
-/// <summary>
-/// 音源解放処理
-/// </summary>
-void ResourceManager::UnLoadSounds() {
-	// コンテナ内に音源が無ければ、処理を終了する
-	if (sounds_container.size() == NULL) {
-		return;
-	}
-
-	// 全ての画像を削除
-	for (std::pair<std::string, int> value : sounds_container) {
-		DeleteSoundMem(value.second);
-	}
-
-	// コンテナを解放
-	sounds_container.clear();
+int ResourceManager::GetSound(const std::string& path) const
+{
+    auto it = sounds_.find(path);
+    if (it != sounds_.end()) {
+        return it->second;
+    }
+    return 0;
 }
 
-/// <summary>
-/// 画像読み込み処理
-/// </summary>
-/// <param name="file_path">ファイルパス</param>
-void ResourceManager::CreateImagesResource(std::string file_path) {
-	// 指定された画像ファイル読み込む
-	int handle = LoadGraph(file_path.c_str());
+// ---------- 解放 ----------
 
-	// エラーチェック
-	if (handle == -1) {
-		throw(file_path + "がありません\n");
-	}
+void ResourceManager::ReleaseAll()
+{
+    // 画像
+    for (auto& kv : images_) {
+        if (kv.second != 0) {
+            DeleteGraph(kv.second);
+        }
+    }
+    images_.clear();
 
-	// コンテナに読み込んだ画像を追加する
-	images_container[file_path].push_back(handle);
-}
-void ResourceManager::CreateImagesResource(std::string file_name, int all_num, int num_x, int num_y, int size_x, int size_y) {
-	// 分割する画像分だけメモリを確保する
-	int* handle = new int[all_num];
+    for (auto& kv : anim_images_) {
+        for (int h : kv.second) {
+            if (h != 0) {
+                DeleteGraph(h);
+            }
+        }
+    }
+    anim_images_.clear();
 
-	// 指定された画像ファイルを分割で読み込む
-	int result = LoadDivGraph(file_name.c_str(), all_num, num_x, num_y, size_x, size_y, handle);
-
-
-
-	// エラーチェック
-	if (result == -1) {
-		throw(file_name + "がありません\n");
-	}
-
-	// コンテナに読み込んだ画像を追加する
-	for (int i = 0; i < all_num; i++) {
-		images_container[file_name].push_back(handle[i]);
-	}
-
-	// 確保したメモリを解放する
-	delete[] handle;
+    // サウンド
+    for (auto& kv : sounds_) {
+        if (kv.second != 0) {
+            DeleteSoundMem(kv.second);
+        }
+    }
+    sounds_.clear();
 }
 
-void ResourceManager::CreateSoundsResource(std::string file_path) {
-	// 指定されたファイルを読み込む
-	int handle = LoadSoundMem(file_path.c_str());
-
-	// エラーチェック
-	if (handle == -1) {
-		throw(file_path + "がありません\n");
-	}
-
-	// コンテナに読み込んだ音源を追加する
-	sounds_container[file_path] = handle;
+ResourceManager::~ResourceManager()
+{
+    ReleaseAll();
 }

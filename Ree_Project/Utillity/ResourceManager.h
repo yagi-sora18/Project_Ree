@@ -1,108 +1,41 @@
 #pragma once
-
 #include <map>
 #include <string>
 #include <vector>
+#include <DxLib.h>
+#include "SingleTone.h"
 
-/// <summary>
-/// リソース管理クラス
-/// </summary>
-class ResourceManager {
-private:
-	// 自クラスのポインタ（実体をアドレスの先で保有）
-	static ResourceManager* instance;
-
-	std::map<std::string, std::vector<int>> images_container; // 画像コンテナ
-	std::map<std::string, int> sounds_container;			  // 音源コンテナ
-
-private:
-	// クラスの実体をメンバ関数内でしか生成できないようにする
-	ResourceManager() = default;
-
-	// コピーガード
-	ResourceManager(const ResourceManager&) = delete;
-	ResourceManager& operator=(const ResourceManager&) = delete;
-	// ~コピーガード
+// リソース管理（画像・アニメ・サウンド）
+class ResourceManager : public Singleton<ResourceManager> {
+    friend class Singleton<ResourceManager>;
 
 public:
-	~ResourceManager() = default;
+    // 単一画像のロード（同じパスは使い回し）
+    int LoadImage(const std::string& path);
 
-	/// <summary>
-	/// インスタンス取得処理
-	/// </summary>
-	/// <returns>インスタンスのポインタを返却する</returns>
-	static ResourceManager* GetInstance();
+    // アニメ用画像のロード（複数ファイルをまとめて 1 セットとして扱う）
+    // 例: key = "coin_spin", paths = { "Coin_0.png", ... }
+    const std::vector<int>& LoadAnimImages(
+        const std::string& key,
+        const std::vector<std::string>& paths
+    );
 
-	/// <summary>
-	/// インスタンス削除処理
-	/// </summary>
-	static void DeleteInstance();
+    // 取得系
+    int GetImage(const std::string& path) const;                      // 単一
+    const std::vector<int>& GetAnimImages(const std::string& key) const; // アニメ
 
-public:
-	/// <summary>
-	/// 画像取得処理
-	/// </summary>
-	/// <param name="file_name">ファイルパス</param>
-	/// <param name="all_num">画像の分割総数</param>
-	/// <param name="num_x">横の分割</param>
-	/// <param name="num_y">縦の分割</param>
-	/// <param name="size_x">横のサイズ(px)</param>
-	/// <param name="size_y">縦のサイズ(px)</param>
-	/// <returns>読み込んだ画像ハンドルのvector配列</returns>
-	const std::vector<int>& GetImages(std::string file_name, int all_num = 1, int num_x = 1, int num_y = 1, int size_x = 0, int size_y = 0);
-	/// <summary>
-	/// 画像取得処理
-	/// </summary>
-	/// <param name="file_name">ファイルパス</param>
-	/// <param name="all_num">画像の分割総数</param>
-	/// <param name="num_x">横の分割</param>
-	/// <param name="num_y">縦の分割</param>
-	/// <param name="size_x">横のサイズ(px)</param>
-	/// <param name="size_y">縦のサイズ(px)</param>
-	/// <returns>読み込んだ画像ハンドルのvector配列</returns>
-	const std::vector<int>& GetImages(const char* file_name, int all_num = 1, int num_x = 1, int num_y = 1, int size_x = 0, int size_y = 0);
+    // サウンドも使いたくなった時用（今は予備）
+    int LoadSound(const std::string& path);
+    int GetSound(const std::string& path) const;
 
-	/// <summary>
-	/// 音源取得処理
-	/// </summary>
-	/// <param name="file_path">音源のファイルパス</param>
-	/// <returns>音源ハンドルデータ</returns>
-	int GetSounds(std::string file_path);
-	/// <summary>
-	/// 音源取得処理
-	/// </summary>
-	/// <param name="file_path">音源のファイルパス</param>
-	/// <returns>音源ハンドルデータ</returns>
-	int GetSounds(const char* file_path);
-
-	/// <summary>
-	/// 画像解放処理
-	/// </summary>
-	void UnLoadImages();
-
-	/// <summary>
-	/// 音源解放処理
-	/// </summary>
-	void UnLoadSounds();
+    // 明示解放したい時（DxLib 終了前など）に呼ぶ
+    void ReleaseAll();
 
 private:
-	/// <summary>
-	/// 画像読み込み処理
-	/// </summary>
-	/// <param name="file_path">ファイルパス</param>
-	void CreateImagesResource(std::string file_path);
+    ResourceManager() = default;
+    ~ResourceManager(); // ReleaseAll を呼ぶだけ
 
-	/// <summary>
-	/// 画像分割読み込み処理
-	/// </summary>
-	/// <param name="file_name">ファイルパス</param>
-	/// <param name="all_num">画像の分割総数</param>
-	/// <param name="num_x">横の分割</param>
-	/// <param name="num_y">縦の分割</param>
-	/// <param name="size_x">横のサイズ(px)</param>
-	/// <param name="size_y">縦のサイズ(px)</param>
-	void CreateImagesResource(std::string file_name, int all_num, int num_x, int num_y, int size_x, int size_y);
-
-	// 音源読み込み処理
-	void CreateSoundsResource(std::string file_path);
+    std::map<std::string, int> images_;                  // path → handle
+    std::map<std::string, std::vector<int>> anim_images_; // key  → [handle...]
+    std::map<std::string, int> sounds_;                  // path → handle
 };

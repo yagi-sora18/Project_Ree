@@ -99,7 +99,7 @@ void InGame::Initialize() {
 	camera_y = 0; now_scene = eSceneType::eInGame; next_scene = eSceneType::eInGame;
 
 	// ★ 制限時間の初期値（1分 = 60秒）
-	time_limit = 6000.0f;
+	time_limit = 180.0f;
 
 	// ★ 何点ごとに時間ボーナスを与えるか
 	//   ここでは「コイン1個 10点」として「50点ごとに+10秒」のイメージ

@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "Scene/SceneManager.h"
+#include "Utillity/ResourceManager.h"
 
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -26,6 +27,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 
+	ResourceManager::GetInstance()->ReleaseAll();
 	DxLib_End();
 	return 0;
 }
