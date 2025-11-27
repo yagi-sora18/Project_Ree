@@ -13,7 +13,6 @@
 #include "../../Object/Wall/Wall.h"
 #include "../../Utillity/Collision.h"
 #include "../../Object/ObjectManager.h"
-
 #include "../../Utillity/ResourceManager.h"
 
 static constexpr float GAME_OFF_X = 250.0f;
@@ -23,22 +22,29 @@ Player::Player(float x, float y, float w, float h)
     collision.object_type = ePlayer;
 }
 
-void Player::Update(float dt) 
+void Player::Update(float dt)
 {
     auto in = InputControl::GetInstance();
 
     // 水平入力
     float ax = 0.0f;
     if (in->GetKey(KEY_INPUT_A))  ax -= 1.0f;
-    if (in->GetKey(KEY_INPUT_D)) ax += 1.0f;
+    if (in->GetKey(KEY_INPUT_D))  ax += 1.0f;
 
     // チャージ開始/維持/解放
-    if (!isJumping && in->GetKeyDown(KEY_INPUT_SPACE)) { charging = true; charge_t = 0.0f; }
-    if (charging && in->GetKey(KEY_INPUT_SPACE)) { charge_t = (std::min)(charge_t + dt, CHARGE_MAX); } // (std::min) でマクロ衝突回避
+    if (!isJumping && in->GetKeyDown(KEY_INPUT_SPACE)) {
+        charging = true;
+        charge_t = 0.0f;
+    }
+    if (charging && in->GetKey(KEY_INPUT_SPACE)) {
+        charge_t = (std::min)(charge_t + dt, CHARGE_MAX); // (std::min) でマクロ衝突回避
+    }
     if (charging && in->GetKeyUp(KEY_INPUT_SPACE)) {
         float r = (CHARGE_MAX <= 0 ? 1.0f : (charge_t / CHARGE_MAX));
         float v0 = JUMP_V0_MIN + (JUMP_V0_MAX - JUMP_V0_MIN) * r;
-        vel.y = -v0; isJumping = true; charging = false;
+        vel.y = -v0;
+        isJumping = true;
+        charging = false;
     }
 
     // 加速/摩擦
@@ -51,35 +57,29 @@ void Player::Update(float dt)
         else if (vel.x < 0) vel.x = (std::min)(0.0f, vel.x + fr);
     }
 
-    // ===== 着地タイマー更新（任意。なければ消してもOK） =====
+    // ===== 着地タイマー更新 =====
     if (landingTimer > 0.0f) {
         landingTimer -= dt;
         if (landingTimer < 0.0f) landingTimer = 0.0f;
     }
 
-    // 「空中 → 地上になった瞬間」を検出できるなら、
-    // そのタイミングで landingTimer に少し時間を入れてあげると
-    // 着地ポーズを短く見せられます。
-    //
-    // 例：
-    // if (前フレームは空中 && 今フレームは onGround) {
-    //     landingTimer = 0.15f; // 0.15秒だけ着地絵にする
-    // }
-
     // ===== アニメ状態の決定 =====
-    if (!A_GROUND) {
+    bool onGround = !isJumping;
+    bool walking = onGround && std::fabs(vel.x) > 20.0f;
+
+    if (!onGround) {
         // 空中にいるとき
         animeState = PlayerAnimeState::Jump;
     }
-    else if (A_AIR) {
-        // 足はついていて溜め中
+    else if (charging) {
+        // 地上でチャージ中
         animeState = PlayerAnimeState::Charge;
     }
     else if (landingTimer > 0.0f) {
         // 着地直後
         animeState = PlayerAnimeState::Landing;
     }
-    else if (std::fabs(vel.x) > 20.0f) {
+    else if (walking) {
         // ある程度横に動いているなら歩き
         animeState = PlayerAnimeState::Walk;
     }
@@ -88,22 +88,24 @@ void Player::Update(float dt)
         animeState = PlayerAnimeState::Idle;
     }
 
-    UpdateCollision(); // これは今まで通り最後に呼んでOK
-
+    UpdateCollision();
 }
 
-void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt) {
+void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt)
+{
     // --- 水平 ---
     float newX = pos.x + vel.x * dt;
-    pos.x = newX; UpdateCollision();
+    pos.x = newX;
+    UpdateCollision();
 
     for (auto* obj : objects) {
         if (!obj || !obj->IsActive()) continue;
         if (obj->collision.object_type != eWall) continue; // 横壁のみ
         if (IsCheckCollision(collision, obj->collision)) {
-            if (vel.x > 0) pos.x = obj->pos.x - width;           // 右側に衝突
-            else if (vel.x < 0) pos.x = obj->pos.x + obj->width; // 左側に衝突
-            vel.x = 0; UpdateCollision();
+            if (vel.x > 0)      pos.x = obj->pos.x - width;          // 右側に衝突
+            else if (vel.x < 0) pos.x = obj->pos.x + obj->width;     // 左側に衝突
+            vel.x = 0;
+            UpdateCollision();
         }
     }
 
@@ -117,44 +119,33 @@ void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt) {
             if (!obj || !obj->IsActive()) continue;
             if (obj->collision.object_type != ePlatform) continue;
 
-            bool xOverlap = !(collision.point[1].x <= obj->collision.point[0].x ||
-                collision.point[0].x >= obj->collision.point[1].x);
+            bool xOverlap =
+                !(collision.point[1].x <= obj->collision.point[0].x ||
+                    collision.point[0].x >= obj->collision.point[1].x);
+
             float bottom0 = pos.y + height;
             float bottom1 = newY + height;
             float pfTop = obj->pos.y;
 
             if (xOverlap && bottom0 <= pfTop && bottom1 >= pfTop) {
+                // 着地
                 newY = pfTop - height;
                 vel.y = 0;
+
+                // ジャンプ状態から地上に戻ったときだけ着地アニメ用タイマーをセット
+                if (isJumping) {
+                    landingTimer = 0.15f; // 0.15秒だけ Landing を表示
+                }
+
                 isJumping = false;
                 break;
             }
         }
     }
 
-    pos.y = newY; UpdateCollision();
+    pos.y = newY;
+    UpdateCollision();
 }
-
-//void Player::Draw(int camera_y) {
-//    DrawBox((int)(pos.x - GAME_OFF_X), (int)(pos.y - camera_y),
-//        (int)(pos.x + width - GAME_OFF_X), (int)(pos.y + height - camera_y),
-//        GetColor(200, 50, 50), TRUE);
-//}
-
-//void Player::Draw(int camera_x, int camera_y)
-//{
-//    DrawBox((int)(pos.x - camera_x), (int)(pos.y - camera_y),
-//        +(int)(pos.x + width - camera_x), (int)(pos.y + height - camera_y),
-//        GetColor(200, 50, 50), TRUE);
-//}
-
-//void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
-//{
-//    DrawBox((int)(pos.x - camera_x + off_x), (int)(pos.y - camera_y + off_y),
-//    (int)(pos.x + width - camera_x + off_x), (int)(pos.y + height - camera_y + off_y),
-//
-//    GetColor(200, 50, 50), TRUE);
-//}
 
 void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
 {
@@ -167,7 +158,6 @@ void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
     if (!s_inited) {
         auto* rm = ResourceManager::GetInstance();
 
-        // ※ファイルパスはあなたが実際に置いたフォルダに合わせて書き換えてください
         sIdle = &rm->LoadAnimImages("player_idle", {
             "Resource/Image/Player_Idle_1.png"
             });
@@ -182,8 +172,7 @@ void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
             "Resource/Image/Player_Walk_7.png"
             });
 
-        // ★ チャージ・ジャンプ・着地は 1セットにまとめる
-        //    index 0: Charge, 1: Jump, 2: Landing
+        // index 0: Charge, 1: Jump, 2: Landing
         sAct = &rm->LoadAnimImages("player_action", {
             "Resource/Image/Player_Gauge.png",
             "Resource/Image/Player_Jump.png",
@@ -252,12 +241,10 @@ void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
     DrawExtendGraph(x0, y0, x1, y1, handle, TRUE);
 }
 
-float Player::GetChargeRatio() const 
+float Player::GetChargeRatio() const
 {
     if (!charging || CHARGE_MAX <= 0.0f) return 0.0f;
 
     float r = charge_t / CHARGE_MAX;
-
     return (r < 0.0f) ? 0.0f : (r > 1.0f ? 1.0f : r);
-
 }
