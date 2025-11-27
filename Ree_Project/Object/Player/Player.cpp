@@ -14,6 +14,8 @@
 #include "../../Utillity/Collision.h"
 #include "../../Object/ObjectManager.h"
 
+#include "../../Utillity/ResourceManager.h"
+
 static constexpr float GAME_OFF_X = 250.0f;
 
 Player::Player(float x, float y, float w, float h)
@@ -21,7 +23,8 @@ Player::Player(float x, float y, float w, float h)
     collision.object_type = ePlayer;
 }
 
-void Player::Update(float dt) {
+void Player::Update(float dt) 
+{
     auto in = InputControl::GetInstance();
 
     // 水平入力
@@ -47,6 +50,46 @@ void Player::Update(float dt) {
         if (vel.x > 0)      vel.x = (std::max)(0.0f, vel.x - fr);
         else if (vel.x < 0) vel.x = (std::min)(0.0f, vel.x + fr);
     }
+
+    // ===== 着地タイマー更新（任意。なければ消してもOK） =====
+    if (landingTimer > 0.0f) {
+        landingTimer -= dt;
+        if (landingTimer < 0.0f) landingTimer = 0.0f;
+    }
+
+    // 「空中 → 地上になった瞬間」を検出できるなら、
+    // そのタイミングで landingTimer に少し時間を入れてあげると
+    // 着地ポーズを短く見せられます。
+    //
+    // 例：
+    // if (前フレームは空中 && 今フレームは onGround) {
+    //     landingTimer = 0.15f; // 0.15秒だけ着地絵にする
+    // }
+
+    // ===== アニメ状態の決定 =====
+    if (!A_GROUND) {
+        // 空中にいるとき
+        animeState = PlayerAnimeState::Jump;
+    }
+    else if (A_AIR) {
+        // 足はついていて溜め中
+        animeState = PlayerAnimeState::Charge;
+    }
+    else if (landingTimer > 0.0f) {
+        // 着地直後
+        animeState = PlayerAnimeState::Landing;
+    }
+    else if (std::fabs(vel.x) > 20.0f) {
+        // ある程度横に動いているなら歩き
+        animeState = PlayerAnimeState::Walk;
+    }
+    else {
+        // それ以外はアイドル
+        animeState = PlayerAnimeState::Idle;
+    }
+
+    UpdateCollision(); // これは今まで通り最後に呼んでOK
+
 }
 
 void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt) {
@@ -105,12 +148,108 @@ void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt) {
 //        GetColor(200, 50, 50), TRUE);
 //}
 
+//void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
+//{
+//    DrawBox((int)(pos.x - camera_x + off_x), (int)(pos.y - camera_y + off_y),
+//    (int)(pos.x + width - camera_x + off_x), (int)(pos.y + height - camera_y + off_y),
+//
+//    GetColor(200, 50, 50), TRUE);
+//}
+
 void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
 {
-    DrawBox((int)(pos.x - camera_x + off_x), (int)(pos.y - camera_y + off_y),
-    (int)(pos.x + width - camera_x + off_x), (int)(pos.y + height - camera_y + off_y),
+    // ===== 画像のロード（最初に呼ばれたときだけ） =====
+    static bool s_inited = false;
+    static const std::vector<int>* sIdle = nullptr;
+    static const std::vector<int>* sWalk = nullptr;
+    static const std::vector<int>* sAct = nullptr; // Charge / Jump / Landing をまとめる
 
-    GetColor(200, 50, 50), TRUE);
+    if (!s_inited) {
+        auto* rm = ResourceManager::GetInstance();
+
+        // ※ファイルパスはあなたが実際に置いたフォルダに合わせて書き換えてください
+        sIdle = &rm->LoadAnimImages("player_idle", {
+            "Resource/Image/Player_Idle_1.png"
+            });
+
+        sWalk = &rm->LoadAnimImages("player_walk", {
+            "Resource/Image/Player_Walk_1.png",
+            "Resource/Image/Player_Walk_2.png",
+            "Resource/Image/Player_Walk_3.png",
+            "Resource/Image/Player_Walk_4.png",
+            "Resource/Image/Player_Walk_5.png",
+            "Resource/Image/Player_Walk_6.png",
+            "Resource/Image/Player_Walk_7.png"
+            });
+
+        // ★ チャージ・ジャンプ・着地は 1セットにまとめる
+        //    index 0: Charge, 1: Jump, 2: Landing
+        sAct = &rm->LoadAnimImages("player_action", {
+            "Resource/Image/Player_Gauge.png",
+            "Resource/Image/Player_Jump.png",
+            "Resource/Image/Player_Landing.png"
+            });
+
+        s_inited = true;
+    }
+
+    // ロードに失敗していた場合の保険
+    auto safeGet = [](const std::vector<int>* vec, int index) -> int {
+        if (!vec || vec->empty()) return 0;
+        if (index < 0 || index >= (int)vec->size()) return 0;
+        return (*vec)[index];
+        };
+
+    int handle = 0;
+
+    // ===== 状態に応じて使うハンドルを決定 =====
+    switch (animeState)
+    {
+    case PlayerAnimeState::Idle:
+        handle = safeGet(sIdle, 0);
+        break;
+
+    case PlayerAnimeState::Walk:
+    {
+        const std::vector<int>* w = sWalk;
+        if (w && !w->empty()) {
+            int t = GetNowCount();
+            int frame = (t / 120) % (int)w->size();   // 120msごとに次のコマ
+            handle = safeGet(w, frame);
+        }
+    }
+    break;
+
+    case PlayerAnimeState::Charge:
+        handle = safeGet(sAct, 0); // Player_Gauge.png
+        break;
+
+    case PlayerAnimeState::Jump:
+        handle = safeGet(sAct, 1); // Player_Jump.png
+        break;
+
+    case PlayerAnimeState::Landing:
+        handle = safeGet(sAct, 2); // Player_Landing.png
+        break;
+    }
+
+    // もし handle が 0（画像なし）なら、今まで通りの四角形で描画
+    if (handle == 0) {
+        int x0 = (int)(pos.x - camera_x + off_x);
+        int y0 = (int)(pos.y - camera_y + off_y);
+        int x1 = (int)(pos.x + width - camera_x + off_x);
+        int y1 = (int)(pos.y + height - camera_y + off_y);
+        DrawBox(x0, y0, x1, y1, GetColor(0, 255, 0), TRUE);
+        return;
+    }
+
+    // ===== 画像をプレイヤーの当たり判定サイズに合わせて描画 =====
+    int x0 = (int)(pos.x - camera_x + off_x);
+    int y0 = (int)(pos.y - camera_y + off_y);
+    int x1 = (int)(pos.x + width - camera_x + off_x);
+    int y1 = (int)(pos.y + height - camera_y + off_y);
+
+    DrawExtendGraph(x0, y0, x1, y1, handle, TRUE);
 }
 
 float Player::GetChargeRatio() const 

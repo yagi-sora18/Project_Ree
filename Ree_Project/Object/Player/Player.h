@@ -3,6 +3,16 @@
 #include <algorithm>
 #include "../Object.h"
 
+// どこかヘッダの上の方に追加
+enum class PlayerAnimeState {
+    Idle,      // アイドル
+    Walk,      // 歩き
+    Charge,    // チャージ中
+    Jump,      // ジャンプ中（空中）
+    Landing    // 着地直後
+};
+
+
 class Player : public Object {
 public:
     Player(float x, float y, float w = 50.0f, float h = 50.0f);
@@ -23,6 +33,13 @@ public:
 private:
     Vector2D vel{ 0,0 };
     bool isJumping{ false };
+
+private:
+    // アニメ用の状態
+    PlayerAnimeState animeState = PlayerAnimeState::Idle;
+
+    // 着地ポーズを少しだけ見せるためのタイマー（任意）
+    float landingTimer = 0.0f;
 
     // チャージジャンプ
     bool  charging{ false };
