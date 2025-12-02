@@ -34,6 +34,9 @@ private:
     Vector2D vel{ 0,0 };
     bool isJumping{ false };
 
+    // ★ 追加：右向きかどうか
+    bool facingRight{ true };
+
 private:
     // アニメ用の状態
     PlayerAnimeState animeState = PlayerAnimeState::Idle;

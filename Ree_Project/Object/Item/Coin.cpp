@@ -74,12 +74,31 @@ void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
     int frame = (t / 120) % (int)frames.size();
     int handle = frames[frame];
 
-    // ==== 座標計算（オブジェクトの矩形に合わせて伸縮描画） ====
-    int x0 = (int)(pos.x - camera_x + off_x);
-    int y0 = (int)(pos.y - camera_y + off_y);
-    int x1 = (int)(pos.x + width - camera_x + off_x);
-    int y1 = (int)(pos.y + height - camera_y + off_y);
+    // ==== 座標計算（少し大きめに描画） ====
+    const float SCALE = 2.0f;   // ★ コインの拡大率。2.0 で2倍サイズ
 
-    // 枠にピッタリはめて描画
+    float cx = pos.x + width * 0.5f;
+    float cy = pos.y + height * 0.5f;
+
+    float drawW = width * SCALE;
+    float drawH = height * SCALE;
+
+    int x0 = (int)(cx - drawW * 0.5f - camera_x + off_x);
+    int x1 = (int)(cx + drawW * 0.5f - camera_x + off_x);
+    int y0 = (int)(cy - drawH * 0.5f - camera_y + off_y);
+    int y1 = (int)(cy + drawH * 0.5f - camera_y + off_y);
+
+    // ★ もし反転したいなら、ここで x0 と x1 を入れ替える
+    // （左右対称なコイン画像なら見た目はほぼ同じですが、やり方の例として）
+    /*
+    bool flip = true; // 条件に応じて true/false を変えてもOK
+    if (flip) {
+        int tmp = x0;
+        x0 = x1;
+        x1 = tmp;
+    }
+    */
+
     DrawExtendGraph(x0, y0, x1, y1, handle, TRUE);
+
 }

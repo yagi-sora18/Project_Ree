@@ -57,6 +57,14 @@ void Player::Update(float dt)
         else if (vel.x < 0) vel.x = (std::min)(0.0f, vel.x + fr);
     }
 
+    // ★ ここで向きを決める
+    if (vel.x > 5.0f) {
+        facingRight = true;
+    }
+    else if (vel.x < -5.0f) {
+        facingRight = false;
+    }
+
     // ===== 着地タイマー更新 =====
     if (landingTimer > 0.0f) {
         landingTimer -= dt;
@@ -232,13 +240,32 @@ void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
         return;
     }
 
-    // ===== 画像をプレイヤーの当たり判定サイズに合わせて描画 =====
-    int x0 = (int)(pos.x - camera_x + off_x);
-    int y0 = (int)(pos.y - camera_y + off_y);
-    int x1 = (int)(pos.x + width - camera_x + off_x);
-    int y1 = (int)(pos.y + height - camera_y + off_y);
+    // ===== 画像を「当たり判定より少し大きめ」に描画し、向きで反転 =====
+    const float SCALE = 1.4f;   // ★拡大率：1.0 = 今までと同じ, 1.4 でちょっと大きめ
+
+    // 当たり判定の中心
+    float cx = pos.x + width * 0.5f;
+    float cy = pos.y + height * 0.5f;
+
+    // 描画サイズ（拡大後）
+    float drawW = width * SCALE;
+    float drawH = height * SCALE;
+
+    // カメラ・オフセットを考慮した描画矩形
+    int x0 = (int)(cx - drawW * 0.5f - camera_x + off_x);
+    int x1 = (int)(cx + drawW * 0.5f - camera_x + off_x);
+    int y0 = (int)(cy - drawH * 0.5f - camera_y + off_y);
+    int y1 = (int)(cy + drawH * 0.5f - camera_y + off_y);
+
+    // ★ 左右反転：左向きのときは x0 と x1 を入れ替える
+    if (!facingRight) {
+        int tmp = x0;
+        x0 = x1;
+        x1 = tmp;
+    }
 
     DrawExtendGraph(x0, y0, x1, y1, handle, TRUE);
+
 }
 
 float Player::GetChargeRatio() const
