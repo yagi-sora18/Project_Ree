@@ -295,7 +295,7 @@ void InGame::Draw()
 	const int panelH = 110;
 
 	// 配置とサイズの微調整
-	const int offsetY = 30;    // 少しだけ下に
+	const int offsetY = 60;    // 少しだけ下に
 	const int trimRight = 40;   // 右側を短く（px からの幅を縮める）
 
 	// 左上基準
