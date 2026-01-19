@@ -6,6 +6,7 @@
 #include "../Object/Goal/Goal.h"
 #include "../Map/MapLoader.h"
 #include "../Utillity/InputControl.h"
+#include "../Utillity/ResourceManager.h"
 #include <algorithm>
 #include <DxLib.h>
 
@@ -82,6 +83,20 @@ void InGame::Initialize() {
 	for (const auto& C : tC) object_manager.Add(new Coin(C.pos.x, C.pos.y, C.width, C.height));
 	for (const auto& W : tW) object_manager.Add(new Wall(W.pos.x, W.pos.y, W.width, W.height));
 	for (const auto& G : tG)  object_manager.Add(new Goal(G.pos.x, G.pos.y, G.width, G.height)); // ★ ゴール生成
+
+	auto* rm = ResourceManager::GetInstance();
+	std::vector<std::string> gauge_paths = {
+		"Resource/Image/gage/Gage1.PNG",
+		"Resource/Image/gage/Gage2.PNG",
+		"Resource/Image/gage/Gage3.PNG",
+		"Resource/Image/gage/Gage4.PNG",
+		"Resource/Image/gage/Gage5.PNG",
+		"Resource/Image/gage/Gage6.PNG",
+		"Resource/Image/gage/Gage7.PNG",
+		"Resource/Image/gage/Gage8.PNG",
+	};
+	rm->LoadAnimImages("charge_gage", gauge_paths);
+	charge_gauge_images = &rm->GetAnimImages("charge_gage");
 
 
 	if (!tP.empty()) 
@@ -224,47 +239,72 @@ void InGame::Update(float dt) {
 
 void InGame::Draw()
 {
-	// ===== 溜めゲージ（頭上UI） =====
-	const float r = player->GetChargeRatio();   // 0..1（充電中のみ>0）
+	//// ===== 溜めゲージ（頭上UI） =====
+	//const float r = player->GetChargeRatio();   // 0..1（充電中のみ>0）
 
-	// 表示位置（プレイヤー頭上）
-	const int gaugeW = 72;
-	const int gaugeH = 10;
-	const int marginUp = 12; // 頭から少し上
-	const int gx = (int)(player->pos.x - camera_x + screen_off_x + player->width * 0.5f - gaugeW * 0.5f);
-	const int gy = (int)(player->pos.y - camera_y + screen_off_y - marginUp - gaugeH);
+	//// 表示位置（プレイヤー頭上）
+	//const int gaugeW = 72;
+	//const int gaugeH = 10;
+	//const int marginUp = 12; // 頭から少し上
+	//const int gx = (int)(player->pos.x - camera_x + screen_off_x + player->width * 0.5f - gaugeW * 0.5f);
+	//const int gy = (int)(player->pos.y - camera_y + screen_off_y - marginUp - gaugeH);
 
-	// 画面外ならスキップ（軽いカリング）
-	const int SCREEN_W = 1280, SCREEN_H = 720;
+	//// 画面外ならスキップ（軽いカリング）
+	//const int SCREEN_W = 1280, SCREEN_H = 720;
 
-	if (!(gx > SCREEN_W || gy > SCREEN_H || gx + gaugeW < 0 || gy + gaugeH < 0))
-	{
-		// 背景（半透明）＋枠
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
-		DrawBox(gx, gy, gx + gaugeW, gy + gaugeH, GetColor(20, 25, 40), TRUE);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		DrawBox(gx, gy, gx + gaugeW, gy + gaugeH, GetColor(220, 220, 240), FALSE);
+	//if (!(gx > SCREEN_W || gy > SCREEN_H || gx + gaugeW < 0 || gy + gaugeH < 0))
+	//{
+	//	// 背景（半透明）＋枠
+	//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+	//	DrawBox(gx, gy, gx + gaugeW, gy + gaugeH, GetColor(20, 25, 40), TRUE);
+	//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	//	DrawBox(gx, gy, gx + gaugeW, gy + gaugeH, GetColor(220, 220, 240), FALSE);
 
-		// 充填部分
-		const int fillW = (int)(gaugeW * r);
+	//	// 充填部分
+	//	const int fillW = (int)(gaugeW * r);
 
-		if (fillW > 0)
-		{
-			const int col = GaugeColorFromRatio(r); // 赤→黄→緑
+	//	if (fillW > 0)
+	//	{
+	//		const int col = GaugeColorFromRatio(r); // 赤→黄→緑
 
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 220);
+	//		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 220);
 
-			DrawBox(gx + 1, gy + 1, gx + 1 + fillW - 2, gy + gaugeH - 1, col, TRUE);
+	//		DrawBox(gx + 1, gy + 1, gx + 1 + fillW - 2, gy + gaugeH - 1, col, TRUE);
 
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	//		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-		}
-	}
-
+	//	}
+	//}
 
 	//object_manager.DrawAll(camera_y);
 	//object_manager.DrawAll(camera_x, camera_y);
 	object_manager.DrawAll(camera_x, camera_y, screen_off_x, screen_off_y);
+
+	// ===== 溜めゲージ（頭上UI） =====
+	if (player && player->IsCharging() && charge_gauge_images && !charge_gauge_images->empty())
+	{
+		const float r = player->GetChargeRatio();   // 0..1
+
+		// 表示サイズ（大きすぎる場合はここを調整）
+		const int gaugeW = 110;
+		const int gaugeH = 60;
+		const int marginUp = 10;
+
+		//int gx = static_cast<int>(player->GetPosX()) - gaugeW / 2;
+		//int gy = static_cast<int>(player->GetPosY()) - marginUp - gaugeH;
+
+		const int gx = (int)(player->pos.x - camera_x + screen_off_x + player->width * 0.5f - gaugeW * 0.5f);
+		const int gy = (int)(player->pos.y - camera_y + screen_off_y - marginUp - gaugeH);
+
+		const int frameCount = static_cast<int>(charge_gauge_images->size());
+		int frameIndex = static_cast<int>(r * frameCount);
+		if (frameIndex < 0) frameIndex = 0;
+		if (frameIndex >= frameCount) frameIndex = frameCount - 1;
+
+		const int handle = (*charge_gauge_images)[frameIndex];
+		DrawExtendGraph(gx, gy, gx + gaugeW, gy + gaugeH, handle, TRUE);
+	}
+
 
 	// スコア表示
 	DrawFormatString(20, 20, GetColor(255, 255, 255), "Score:%d", object_manager.GetScore());

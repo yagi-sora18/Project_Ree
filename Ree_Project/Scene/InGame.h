@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneBase.h"
 #include "../Object/ObjectManager.h"
+#include <vector>
 
 
 class Player;
@@ -26,6 +27,8 @@ private:
 
 	float time_limit = 0.0f;        // 残り時間（秒）
 	int   next_time_bonus_score = 0; // 次に時間ボーナスをもらえるスコア閾値
+
+	const std::vector<int>* charge_gauge_images{ nullptr };
 
 	eSceneType now_scene{ eSceneType::eInGame };
 	eSceneType next_scene{ eSceneType::eInGame };
