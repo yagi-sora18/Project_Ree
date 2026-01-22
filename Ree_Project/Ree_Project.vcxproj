@@ -134,7 +134,6 @@
     <ClCompile Include="AppMain.cpp" />
     <ClCompile Include="Object\Goal\Goal.cpp" />
     <ClCompile Include="Object\Item\Coin.cpp" />
-    <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Object\ObjectManager.cpp" />
     <ClCompile Include="Object\Platform\Platform.cpp" />
     <ClCompile Include="Object\Player\Player.cpp" />
@@ -163,7 +162,6 @@
     <ClInclude Include="Scene\InGame.h" />
     <ClInclude Include="Scene\Title.h" />
     <ClInclude Include="Utillity\Collision.h" />
-    <ClInclude Include="Utillity\Enum.h" />
     <ClInclude Include="Utillity\InputControl.h" />
     <ClInclude Include="Utillity\ResourceManager.h" />
     <ClInclude Include="Utillity\ScoreManager.h" />
