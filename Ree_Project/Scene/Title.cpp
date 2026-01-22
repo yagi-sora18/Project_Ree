@@ -25,7 +25,7 @@ void Title::Initialize()
 
     // ★ タイトル画像の読み込み（パスは自分の画像に合わせて変更）
     // 例: Ree_Project/Resource/Image/Title.png
-    titleGraph = LoadGraph("Resource/Image/Title2.png");
+    titleGraph = LoadGraph("Resource/Image/TitleScene.png");
 }
 
 void Title::Update(float dt)

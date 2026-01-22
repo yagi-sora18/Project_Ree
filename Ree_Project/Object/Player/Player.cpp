@@ -101,51 +101,81 @@ void Player::Update(float dt)
 
 void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt)
 {
-    // --- 水平 ---
+    // =========================
+    // 1) 横移動 → 横の押し戻し
+    // =========================
     float newX = pos.x + vel.x * dt;
     pos.x = newX;
     UpdateCollision();
 
-    for (auto* obj : objects) {
+    for (auto* obj : objects)
+    {
         if (!obj || !obj->IsActive()) continue;
-        if (obj->collision.object_type != eWall) continue; // 横壁のみ
-        if (IsCheckCollision(collision, obj->collision)) {
-            if (vel.x > 0)      pos.x = obj->pos.x - width;          // 右側に衝突
-            else if (vel.x < 0) pos.x = obj->pos.x + obj->width;     // 左側に衝突
-            vel.x = 0;
+
+        // 壁と足場を「横からも当たる」ようにする（必要ないなら ePlatform を外してOK）
+        bool isBlock = (obj->collision.object_type == eWall) || (obj->collision.object_type == ePlatform);
+        if (!isBlock) continue;
+
+        if (IsCheckCollision(collision, obj->collision))
+        {
+            if (vel.x > 0)      pos.x = obj->pos.x - width;      // 右へ行って右側に当たった
+            else if (vel.x < 0) pos.x = obj->pos.x + obj->width; // 左へ行って左側に当たった
+
+            vel.x = 0.0f;
             UpdateCollision();
         }
     }
 
-    // --- 垂直 ---
+    // =========================
+    // 2) 縦移動 → 上下の押し戻し
+    // =========================
     vel.y += GRAVITY * dt;
+
+    float oldY = pos.y;
     float newY = pos.y + vel.y * dt;
 
-    // 落下時の上面スイープ（Platform のみ着地）
-    if (vel.y > 0) {
-        for (auto* obj : objects) {
-            if (!obj || !obj->IsActive()) continue;
-            if (obj->collision.object_type != ePlatform) continue;
+    bool landed = false;
 
-            bool xOverlap =
-                !(collision.point[1].x <= obj->collision.point[0].x ||
-                    collision.point[0].x >= obj->collision.point[1].x);
+    // 縦判定は「壁」と「足場」を対象にする
+    for (auto* obj : objects)
+    {
+        if (!obj || !obj->IsActive()) continue;
 
-            float bottom0 = pos.y + height;
-            float bottom1 = newY + height;
-            float pfTop = obj->pos.y;
+        bool isBlock = (obj->collision.object_type == eWall) || (obj->collision.object_type == ePlatform);
+        if (!isBlock) continue;
 
-            if (xOverlap && bottom0 <= pfTop && bottom1 >= pfTop) {
-                // 着地
-                newY = pfTop - height;
-                vel.y = 0;
+        // 横が重なっていないなら縦衝突は起きない
+        bool xOverlap =
+            !((pos.x + width) <= obj->pos.x || pos.x >= (obj->pos.x + obj->width));
+        if (!xOverlap) continue;
 
-                // ジャンプ状態から地上に戻ったときだけ着地アニメ用タイマーをセット
-                if (isJumping) {
-                    landingTimer = 0.15f; // 0.15秒だけ Landing を表示
-                }
+        float playerOldTop = oldY;
+        float playerOldBottom = oldY + height;
+        float playerNewTop = newY;
+        float playerNewBottom = newY + height;
 
-                isJumping = false;
+        float blockTop = obj->pos.y;
+        float blockBottom = obj->pos.y + obj->height;
+
+        // 落下中：ブロックの上に乗る（着地）
+        if (vel.y > 0.0f)
+        {
+            if (playerOldBottom <= blockTop && playerNewBottom >= blockTop)
+            {
+                newY = blockTop - height;
+                vel.y = 0.0f;
+                landed = true;
+                break;
+            }
+        }
+        // 上昇中：ブロックの下面に頭が当たる（下から貫通を止める）
+        else if (vel.y < 0.0f)
+        {
+            if (playerOldTop >= blockBottom && playerNewTop <= blockBottom)
+            {
+                newY = blockBottom;
+                vel.y = 0.0f;
+                // landed は false のまま（空中扱い）
                 break;
             }
         }
@@ -153,6 +183,19 @@ void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt)
 
     pos.y = newY;
     UpdateCollision();
+
+    // =========================
+    // 3) 空中/地上 状態の更新
+    // =========================
+    if (landed)
+    {
+        if (isJumping) landingTimer = 0.15f;
+        isJumping = false;
+    }
+    else
+    {
+        isJumping = true;
+    }
 }
 
 void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
