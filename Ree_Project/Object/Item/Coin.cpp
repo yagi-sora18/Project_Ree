@@ -6,7 +6,7 @@
 #include <cmath>
 
 
-static constexpr float GAME_OFF_X = 250.0f;
+//static constexpr float GAME_OFF_X = 250.0f;
 
 
 void Coin::Update(float) {
