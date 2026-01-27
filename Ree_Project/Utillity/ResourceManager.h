@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <DxLib.h>
-#include "SingleTone.h"
+#include "SingleTon.h"
 
 // リソース管理（画像・アニメ・サウンド）
 class ResourceManager : public Singleton<ResourceManager> {

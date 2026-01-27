@@ -74,7 +74,7 @@
     <ClInclude Include="Utillity\ScoreManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utillity\SingleTone.h">
+    <ClInclude Include="Utillity\SingleTon.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Utillity\Vector2D.h">

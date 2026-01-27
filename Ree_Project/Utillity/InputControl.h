@@ -1,5 +1,5 @@
 #pragma once
-#include "SingleTone.h"
+#include "SingleTon.h"
 
 // DxLib ‚Ì GetHitKeyStateAll ‚Í char* ‚ğ—v‹‚·‚é‚Ì‚ÅA”z—ñ‚Í char Œ^‚Å‚Â
 class InputControl : public Singleton<InputControl> {

@@ -165,7 +165,7 @@
     <ClInclude Include="Utillity\InputControl.h" />
     <ClInclude Include="Utillity\ResourceManager.h" />
     <ClInclude Include="Utillity\ScoreManager.h" />
-    <ClInclude Include="Utillity\SingleTone.h" />
+    <ClInclude Include="Utillity\SingleTon.h" />
     <ClInclude Include="Utillity\Vector2D.h" />
     <ClInclude Include="Object\Wall\Wall.h" />
   </ItemGroup>
