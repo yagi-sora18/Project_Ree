@@ -154,7 +154,7 @@ void InGame::Initialize() {
 		screen_off_y = SCREEN_H - map_h_px;
 	}
 
-	bg_image = LoadGraph("Resource/Image/Background.png");
+	bg_image = LoadGraph("Resource/Image/Background2.png");
 
 	// 読み込み失敗チェック（-1 なら失敗）
 	if (bg_image == -1) {
