@@ -8,6 +8,7 @@
 #include "../Map/MapLoader.h"
 #include "../Utillity/InputControl.h"
 #include "../Utillity/ResourceManager.h"
+#include "../Utillity/SoundManager.h"
 #include <algorithm>
 #include <DxLib.h>
 
@@ -99,6 +100,8 @@ void InGame::Initialize() {
 	rm->LoadAnimImages("charge_gage", gauge_paths);
 	charge_gauge_images = &rm->GetAnimImages("charge_gage");
 
+	SoundManager::GetInstance()->PlayBgm("Resource/Sound/BGM_InGame.wav");
+
 
 	if (!tP.empty()) 
 	{
@@ -163,7 +166,11 @@ void InGame::Initialize() {
 	dead_line_y = (float)camera_y + (SCREEN_H - (float)screen_off_y) + 200.0f;
 
 
-	now_scene = eSceneType::eInGame; next_scene = eSceneType::eInGame;
+	now_scene = eSceneType::eInGame;
+
+	SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Goal.wav");
+
+	next_scene = eSceneType::eInGame;
 }
 
 

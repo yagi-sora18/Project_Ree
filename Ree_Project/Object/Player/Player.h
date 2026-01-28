@@ -37,6 +37,10 @@ private:
     // ★ 追加：右向きかどうか
     bool facingRight{ true };
 
+    float walkSeTimer = 0.0f;
+    bool  chargeSeOn = false;
+
+
 private:
     // アニメ用の状態
     PlayerAnimeState animeState = PlayerAnimeState::Idle;

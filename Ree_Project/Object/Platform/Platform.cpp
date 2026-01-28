@@ -34,7 +34,7 @@ void Platform::Draw(int camera_x, int camera_y, int off_x, int off_y)
     static bool loaded = false;
     static int platformImage = -1;
 
-    const int drawMargin = 20; //‘å‚«‚³•ÏX
+    const int drawMargin = 25; //‘å‚«‚³•ÏX
 
 
     if (!loaded) {

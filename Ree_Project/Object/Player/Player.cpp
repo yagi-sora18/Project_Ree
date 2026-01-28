@@ -14,6 +14,8 @@
 #include "../../Utillity/Collision.h"
 #include "../../Object/ObjectManager.h"
 #include "../../Utillity/ResourceManager.h"
+#include "../../Utillity/SoundManager.h"
+
 
 static constexpr float GAME_OFF_X = 250.0f;
 
@@ -32,19 +34,36 @@ void Player::Update(float dt)
     if (in->GetKey(KEY_INPUT_D))  ax += 1.0f;
 
     // チャージ開始/維持/解放
-    if (!isJumping && in->GetKeyDown(KEY_INPUT_SPACE)) {
+    if (!isJumping && in->GetKeyDown(KEY_INPUT_SPACE)) 
+    {
         charging = true;
         charge_t = 0.0f;
+
+        SoundManager::GetInstance()->PlaySeLoop("Resource/Sound/SE_Charge.wav");
+        chargeSeOn = true;
     }
-    if (charging && in->GetKey(KEY_INPUT_SPACE)) {
+
+    if (charging && in->GetKey(KEY_INPUT_SPACE)) 
+    {
         charge_t = (std::min)(charge_t + dt, CHARGE_MAX); // (std::min) でマクロ衝突回避
+    
     }
-    if (charging && in->GetKeyUp(KEY_INPUT_SPACE)) {
+
+    if (charging && in->GetKeyUp(KEY_INPUT_SPACE)) 
+    {
+        if (chargeSeOn) {
+            SoundManager::GetInstance()->StopSe("Resource/Sound/SE_Charge.wav");
+            chargeSeOn = false;
+        }
+
         float r = (CHARGE_MAX <= 0 ? 1.0f : (charge_t / CHARGE_MAX));
         float v0 = JUMP_V0_MIN + (JUMP_V0_MAX - JUMP_V0_MIN) * r;
         vel.y = -v0;
+
         isJumping = true;
         charging = false;
+
+        SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Jump.wav");
     }
 
     // 加速/摩擦
@@ -75,6 +94,18 @@ void Player::Update(float dt)
     bool onGround = !isJumping;
     bool walking = onGround && std::fabs(vel.x) > 20.0f;
 
+    if (walking && !charging) {
+        walkSeTimer += dt;
+        if (walkSeTimer >= 0.25f) {
+            SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Walk.wav");
+            walkSeTimer = 0.0f;
+        }
+    }
+    else {
+        walkSeTimer = 0.0f;
+    }
+
+
     if (!onGround) {
         // 空中にいるとき
         animeState = PlayerAnimeState::Jump;
@@ -101,9 +132,9 @@ void Player::Update(float dt)
 
 void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt)
 {
-    // =========================
-    // 1) 横移動 → 横の押し戻し
-    // =========================
+    bool wasJumping = isJumping; // 前フレームの状態
+
+    // 横移動 → 横の押し戻し
     float newX = pos.x + vel.x * dt;
     pos.x = newX;
     UpdateCollision();
@@ -126,9 +157,7 @@ void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt)
         }
     }
 
-    // =========================
-    // 2) 縦移動 → 上下の押し戻し
-    // =========================
+    // 縦移動 → 上下の押し戻し
     vel.y += GRAVITY * dt;
 
     float oldY = pos.y;
@@ -184,11 +213,13 @@ void Player::ApplyPhysics(const std::vector<Object*>& objects, float dt)
     pos.y = newY;
     UpdateCollision();
 
-    // =========================
-    // 3) 空中/地上 状態の更新
-    // =========================
+    // 空中/地上 状態の更新
     if (landed)
     {
+        if (wasJumping) {
+            SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Land.wav");
+        }
+
         if (isJumping) landingTimer = 0.15f;
         isJumping = false;
     }
@@ -284,7 +315,7 @@ void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
     }
 
     // ===== 画像を「当たり判定より少し大きめ」に描画し、向きで反転 =====
-    const float SCALE = 1.4f;   // ★拡大率：1.0 = 今までと同じ, 1.4 でちょっと大きめ
+    const float SCALE = 1.7f;   // ★拡大率：1.0 = 今までと同じ, 1.4 でちょっと大きめ
 
     // 当たり判定の中心
     float cx = pos.x + width * 0.5f;

@@ -3,11 +3,6 @@
 #include "../Utillity/InputControl.h"
 #include "../Utillity/SoundManager.h"
 
-void Result::Initialize()
-{
-	next = eSceneType::eResult;
-	SoundManager::GetInstance()->PlayBgm("Resource/Sound/BGM_Result.wav");
-}
 
 ResultMode Result::last_mode = ResultMode::GameOver;
 
@@ -35,6 +30,10 @@ void Result::Initialize()
     // 画像読み込み（プロジェクト内に置いた場所）
     clear_image = LoadGraph("Resource/Image/GameClear.png");
     over_image = LoadGraph("Resource/Image/GameOver.png");
+
+    next_scene = eSceneType::eResult;
+    SoundManager::GetInstance()->PlayBgm("Resource/Sound/BGM_Result.wav");
+
 }
 
 void Result::Update(float)

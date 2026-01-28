@@ -25,7 +25,7 @@ void Title::Initialize()
     }
 
     // タイトル画像の読み込み（パスは自分の画像に合わせて変更）
-    titleGraph = LoadGraph("Resource/Image/TitleScene.png");
+    titleGraph = LoadGraph("Resource/Image/Title3.png");
 
     // BGMの読む込み
     SoundManager::GetInstance()->PlayBgm("Resource/Sound/BGM_Title.wav");
@@ -65,8 +65,8 @@ void Title::Draw()
         DrawString(50, 50, "Title image not found.", GetColor(255, 255, 255));
     }
 
-    // 画面下あたりに「PRESS START」的な文字を表示
-    const char* msg = "Press SPACE / ENTER to Start";
-    int w = GetDrawStringWidth(msg, (int)strlen(msg));
-    DrawString((sw - w) / 2, sh - 80, msg, GetColor(255, 255, 255));
+    //// 画面下あたりに「PRESS START」的な文字を表示
+    //const char* msg = "Press SPACE / ENTER to Start";
+    //int w = GetDrawStringWidth(msg, (int)strlen(msg));
+    //DrawString((sw - w) / 2, sh - 80, msg, GetColor(255, 255, 255));
 }

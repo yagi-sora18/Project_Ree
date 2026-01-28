@@ -1,7 +1,7 @@
 #include "ObjectManager.h"
 #include "../Object/Player/Player.h"
 #include "../Object/Item/Coin.h"
-
+#include "../Utillity/SoundManager.h"
 
 
 ObjectManager::~ObjectManager() { ClearAll(); }
@@ -17,11 +17,11 @@ void ObjectManager::ClearAll() {
 
 
 void ObjectManager::UpdateAll(float dt) {
-	// 1) 各オブジェクトのUpdate
+	// 各オブジェクトのUpdate
 	for (auto* obj : objects) if (obj && obj->IsActive()) obj->Update(dt);
 
 
-	// 2) プレイヤーの物理適用
+	// プレイヤーの物理適用
 	for (auto* obj : objects) {
 		if (!obj || !obj->IsActive()) continue;
 		if (auto* p = dynamic_cast<Player*>(obj)) {
@@ -30,14 +30,21 @@ void ObjectManager::UpdateAll(float dt) {
 	}
 
 
-	// 3) コイン取得
+	// コイン取得
 	for (auto* objP : objects) {
 		auto* p = dynamic_cast<Player*>(objP);
 		if (!p || !p->IsActive()) continue;
 		for (auto* objC : objects) {
 			auto* c = dynamic_cast<Coin*>(objC);
 			if (!c || !c->IsActive() || c->collected) continue;
-			if (IsCheckCollision(p->collision, c->collision)) { c->collected = true; AddScore(10); }
+			if (IsCheckCollision(p->collision, c->collision)) 
+			{ 
+				c->collected = true;
+
+				AddScore(10);
+
+				SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Coin.wav");
+			}
 		}
 	}
 
