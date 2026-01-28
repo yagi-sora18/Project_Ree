@@ -29,7 +29,7 @@ private:
 	int   next_time_bonus_score = 0; // 次に時間ボーナスをもらえるスコア閾値
 	float dead_line_y = 0.0f;  // ここより下に落ちたらゲームオーバー
 
-	int background_image = -1;
+	int bg_image = -1;
 
 	const std::vector<int>* charge_gauge_images{ nullptr };
 

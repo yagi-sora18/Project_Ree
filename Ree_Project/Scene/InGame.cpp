@@ -68,8 +68,6 @@ void InGame::Initialize() {
 	object_manager.ClearAll();
 
 
-	background_image = LoadGraph("Resource/Image/Background.png");
-
 	std::vector<Player> tP;
 	std::vector<Platform> tPf;
 	std::vector<Coin> tC;
@@ -153,6 +151,14 @@ void InGame::Initialize() {
 		screen_off_y = SCREEN_H - map_h_px;
 	}
 
+	bg_image = LoadGraph("Resource/Image/Background.png");
+
+	// 読み込み失敗チェック（-1 なら失敗）
+	if (bg_image == -1) {
+		printfDx("背景画像の読み込みに失敗: Resource/Image/InGameBG.png\n");
+	}
+
+
 	// 「開始時点の画面下端（世界座標）」をデッドラインにする（固定）
 	dead_line_y = (float)camera_y + (SCREEN_H - (float)screen_off_y) + 200.0f;
 
@@ -230,6 +236,7 @@ void InGame::Update(float dt) {
 			if (obj->collision.object_type != eGoal) continue;
 			if (IsCheckCollision(player->collision, obj->collision)) 
 			{
+				Result::SetMode(ResultMode::GameClear);
 				next_scene = eSceneType::eResult;
 				break;
 
@@ -254,6 +261,10 @@ void InGame::Update(float dt) {
 
 void InGame::Draw()
 {
+	// 背景（最初に描く）
+	if (bg_image != -1) {
+		DrawExtendGraph(0, 0, 1280, 720, bg_image, TRUE);
+	}
 
 	//// ===== 溜めゲージ（頭上UI） =====
 	//const float r = player->GetChargeRatio();   // 0..1（充電中のみ>0）
