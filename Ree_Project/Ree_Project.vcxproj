@@ -141,6 +141,7 @@
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\InGame.cpp" />
     <ClCompile Include="Scene\Title.cpp" />
+    <ClCompile Include="Utillity\SoundManager.cpp" />
     <ClCompile Include="Utillity\Collision.cpp" />
     <ClCompile Include="Utillity\InputControl.cpp" />
     <ClCompile Include="Utillity\ResourceManager.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\InGame.h" />
     <ClInclude Include="Scene\Title.h" />
+    <ClInclude Include="Utillity\SoundManager.h" />
     <ClInclude Include="Utillity\Collision.h" />
     <ClInclude Include="Utillity\InputControl.h" />
     <ClInclude Include="Utillity\ResourceManager.h" />

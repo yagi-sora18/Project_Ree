@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include "Title.h"
 #include "../Utillity/InputControl.h"  // 入力取得用（InGameと同じクラス）:contentReference[oaicite:3]{index=3}
+#include "../Utillity/SoundManager.h"
 
 Title::Title() {}
 
@@ -23,9 +24,12 @@ void Title::Initialize()
         titleGraph = -1;
     }
 
-    // ★ タイトル画像の読み込み（パスは自分の画像に合わせて変更）
-    // 例: Ree_Project/Resource/Image/Title.png
+    // タイトル画像の読み込み（パスは自分の画像に合わせて変更）
     titleGraph = LoadGraph("Resource/Image/TitleScene.png");
+
+    // BGMの読む込み
+    SoundManager::GetInstance()->PlayBgm("Resource/Sound/BGM_Title.wav");
+
 }
 
 void Title::Update(float dt)
@@ -39,6 +43,8 @@ void Title::Update(float dt)
         in->GetKeyDown(KEY_INPUT_RETURN) ||   // Enter
         in->GetKeyDown(KEY_INPUT_Z))          // Zキーなど、好みで
     {
+        SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_TitleDecide.wav");
+
         next_scene = eSceneType::eInGame;
     }
 }

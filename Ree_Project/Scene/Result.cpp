@@ -1,6 +1,13 @@
 #include "Result.h"
 #include <DxLib.h>
 #include "../Utillity/InputControl.h"
+#include "../Utillity/SoundManager.h"
+
+void Result::Initialize()
+{
+	next = eSceneType::eResult;
+	SoundManager::GetInstance()->PlayBgm("Resource/Sound/BGM_Result.wav");
+}
 
 
 void Result::Update(float) {
