@@ -97,7 +97,7 @@ void Player::Update(float dt)
     if (walking && !charging) {
         walkSeTimer += dt;
         if (walkSeTimer >= 0.25f) {
-            SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Walk_0p30s.wav");
+            SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Walk.wav");
             walkSeTimer = 0.0f;
         }
     }

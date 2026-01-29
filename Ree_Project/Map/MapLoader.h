@@ -44,7 +44,7 @@ inline void LoadMapFromCSV(
 
 			case 'q': walls.emplace_back(x, y, (float)tile_size, (float)tile_size); break;
 
-			case 'g': goals.emplace_back(x, y, (float)tile_size, (float)tile_size); break; // ★ ゴール
+			case 'g': goals.emplace_back(x,y - (float)tile_size * 1.0f,/* 上に2マスぶん*/(float)tile_size * 2.0f,/*横2マス*/(float)tile_size * 3.0f/*縦3マス*/); break;
 
 			default: break;
 			}
