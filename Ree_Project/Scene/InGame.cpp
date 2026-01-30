@@ -131,22 +131,25 @@ void InGame::Initialize() {
 	const int SCREEN_H = 720;
 	camera_x = Max(0, map_w_px - SCREEN_W);
 	camera_y = Max(0, map_h_px - SCREEN_H);*/
-	const int SCREEN_W = 1280;
+	const int SCREEN_W = 1330;
 	const int SCREEN_H = 720;
 
 	  // 横：マップが狭ければ camera_x=0 にして、右寄せオフセットを足す → 左側が空白になる
 	if (map_w_px >= SCREEN_W)
 	{
-		camera_x = Max(0, map_w_px - SCREEN_W); screen_off_x = 0;
+		camera_x = Max(0, map_w_px - SCREEN_W); 
+		screen_off_x = 0;
 	}
 	else
 	{
-		camera_x = 0;screen_off_x = SCREEN_W - map_w_px;
+		camera_x = 0;
+		screen_off_x = SCREEN_W - map_w_px;
 	}
 	// 縦：右下基準を維持（マップが低ければ下に寄せる＝上が空白）
 	if (map_h_px >= SCREEN_H)
 	{
-		camera_y = Max(0, map_h_px - SCREEN_H); screen_off_y = 0;
+		camera_y = Max(0, map_h_px - SCREEN_H);
+		screen_off_y = 0;
 	}
 	 else
 	{ 
