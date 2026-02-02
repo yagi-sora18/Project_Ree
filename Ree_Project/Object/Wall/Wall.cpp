@@ -31,7 +31,7 @@ void Wall::Draw(int camera_x, int camera_y, int off_x, int off_y)
     static bool loaded = false;
     static int wallImage = -1;
 
-    const int drawMargin = 5; //‘å‚«‚³•ÏX
+    const int drawMargin = 0; //‘å‚«‚³•ÏX
 
 
     if (!loaded) {
