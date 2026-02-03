@@ -43,7 +43,8 @@ void Title::Update(float dt)
         in->GetKeyDown(KEY_INPUT_RETURN) ||   // Enter
         in->GetKeyDown(KEY_INPUT_Z))          // Zキーなど、好みで
     {
-        SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_TitleDecide.wav");
+        SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Button.wav");
+        SoundManager::GetInstance()->PlaySe("Resource/Sound/SE_Transition.wav");
 
         next_scene = eSceneType::eInGame;
     }

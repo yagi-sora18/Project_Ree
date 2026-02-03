@@ -34,7 +34,7 @@ void Platform::Draw(int camera_x, int camera_y, int off_x, int off_y)
     static bool loaded = false;
     static int platformImage = -1;
 
-    const int drawMargin = 25; //‘å‚«‚³•ÏX
+    const int drawMargin = 15; //‘å‚«‚³•ÏX
 
 
     if (!loaded) {
@@ -44,7 +44,7 @@ void Platform::Draw(int camera_x, int camera_y, int off_x, int off_y)
 
     int x0 = (int)(pos.x - camera_x + off_x) - drawMargin;
     int y0 = (int)(pos.y - camera_y + off_y) - drawMargin;
-    int x1 = (int)(pos.x + width - camera_x + off_x) + drawMargin;
+    int x1 = (int)(pos.x + width - camera_x + off_x) + drawMargin+20;
     int y1 = (int)(pos.y + height - camera_y + off_y) + drawMargin;
 
     if (platformImage < 0) {

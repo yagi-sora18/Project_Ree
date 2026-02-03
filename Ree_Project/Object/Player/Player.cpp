@@ -17,8 +17,6 @@
 #include "../../Utillity/SoundManager.h"
 
 
-static constexpr float GAME_OFF_X = 250.0f;
-
 Player::Player(float x, float y, float w, float h)
     : Object(x, y, w, h) {
     collision.object_type = ePlayer;
@@ -315,7 +313,7 @@ void Player::Draw(int camera_x, int camera_y, int off_x, int off_y)
     }
 
     // ===== 画像を「当たり判定より少し大きめ」に描画し、向きで反転 =====
-    const float SCALE = 1.7f;   // ★拡大率：1.0 = 今までと同じ, 1.4 でちょっと大きめ
+    const float SCALE = 1.5f;   //大きさ変更
 
     // 当たり判定の中心
     float cx = pos.x + width * 0.5f;

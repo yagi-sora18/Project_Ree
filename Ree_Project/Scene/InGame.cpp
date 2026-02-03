@@ -120,33 +120,32 @@ void InGame::Initialize() {
 	// ★ 制限時間の初期値（1分 = 60秒）
 	time_limit = 180.0f;
 
-	// ★ 何点ごとに時間ボーナスを与えるか
-	//   ここでは「コイン1個 10点」として「50点ごとに+10秒」のイメージ
+	//何点ごとに時間ボーナスを与えるか
+	//ここでは「コイン1個 10点」として「50点ごとに+10秒」のイメージ
 	const int SCORE_PER_BONUS = 50;
 	next_time_bonus_score = SCORE_PER_BONUS;
 
 	// 画面サイズに合わせて右下端に寄せる
 
-	/*const int SCREEN_W = 1280;
-	const int SCREEN_H = 720;
-	camera_x = Max(0, map_w_px - SCREEN_W);
-	camera_y = Max(0, map_h_px - SCREEN_H);*/
-	const int SCREEN_W = 1280;
+	const int SCREEN_W = 1330;
 	const int SCREEN_H = 720;
 
 	  // 横：マップが狭ければ camera_x=0 にして、右寄せオフセットを足す → 左側が空白になる
 	if (map_w_px >= SCREEN_W)
 	{
-		camera_x = Max(0, map_w_px - SCREEN_W); screen_off_x = 0;
+		camera_x = Max(0, map_w_px - SCREEN_W); 
+		screen_off_x = 0;
 	}
 	else
 	{
-		camera_x = 0;screen_off_x = SCREEN_W - map_w_px;
+		camera_x = 0;
+		screen_off_x = SCREEN_W - map_w_px;
 	}
 	// 縦：右下基準を維持（マップが低ければ下に寄せる＝上が空白）
 	if (map_h_px >= SCREEN_H)
 	{
-		camera_y = Max(0, map_h_px - SCREEN_H); screen_off_y = 0;
+		camera_y = Max(0, map_h_px - SCREEN_H);
+		screen_off_y = 0;
 	}
 	 else
 	{ 
@@ -273,45 +272,6 @@ void InGame::Draw()
 		DrawExtendGraph(0, 0, 1280, 720, bg_image, TRUE);
 	}
 
-	//// ===== 溜めゲージ（頭上UI） =====
-	//const float r = player->GetChargeRatio();   // 0..1（充電中のみ>0）
-
-	//// 表示位置（プレイヤー頭上）
-	//const int gaugeW = 72;
-	//const int gaugeH = 10;
-	//const int marginUp = 12; // 頭から少し上
-	//const int gx = (int)(player->pos.x - camera_x + screen_off_x + player->width * 0.5f - gaugeW * 0.5f);
-	//const int gy = (int)(player->pos.y - camera_y + screen_off_y - marginUp - gaugeH);
-
-	//// 画面外ならスキップ（軽いカリング）
-	//const int SCREEN_W = 1280, SCREEN_H = 720;
-
-	//if (!(gx > SCREEN_W || gy > SCREEN_H || gx + gaugeW < 0 || gy + gaugeH < 0))
-	//{
-	//	// 背景（半透明）＋枠
-	//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
-	//	DrawBox(gx, gy, gx + gaugeW, gy + gaugeH, GetColor(20, 25, 40), TRUE);
-	//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	//	DrawBox(gx, gy, gx + gaugeW, gy + gaugeH, GetColor(220, 220, 240), FALSE);
-
-	//	// 充填部分
-	//	const int fillW = (int)(gaugeW * r);
-
-	//	if (fillW > 0)
-	//	{
-	//		const int col = GaugeColorFromRatio(r); // 赤→黄→緑
-
-	//		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 220);
-
-	//		DrawBox(gx + 1, gy + 1, gx + 1 + fillW - 2, gy + gaugeH - 1, col, TRUE);
-
-	//		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-	//	}
-	//}
-
-	//object_manager.DrawAll(camera_y);
-	//object_manager.DrawAll(camera_x, camera_y);
 	object_manager.DrawAll(camera_x, camera_y, screen_off_x, screen_off_y);
 
 	// ===== 溜めゲージ（頭上UI） =====
