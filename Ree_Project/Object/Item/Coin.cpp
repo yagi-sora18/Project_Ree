@@ -14,27 +14,6 @@ void Coin::Update(float) {
 	UpdateCollision();
 }
 
-
-//void Coin::Draw(int camera_y) 
-
-//void Coin::Draw(int camera_x, int camera_y) {
-//	if (collected) return;
-//	//int x = (int)(pos.x - GAME_OFF_X);
-//	int x = (int)(pos.x - camera_x);
-//	int y = (int)(pos.y - camera_y);
-//	DrawCircle(x + (int)width / 2, y + (int)height / 2, (int)(width / 2), GetColor(255, 215, 0), true);
-//}
-
-//void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
-//{
-//	if (collected) return;
-//
-//	int x = (int)(pos.x - camera_x + off_x);
-//	int y = (int)(pos.y - camera_y + off_y);
-//
-//	DrawCircle(x + (int)width / 2, y + (int)height / 2, (int)(width / 2), GetColor(255, 215, 0), true);
-//}
-
 void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
 {
     //取得済みなら描画しない
@@ -75,7 +54,7 @@ void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
     int handle = frames[frame];
 
     // ==== 座標計算（少し大きめに描画） ====
-    const float SCALE = 2.5f;   // ★ コインの拡大率。2.0 で2倍サイズ
+    const float SCALE = 1.5f;   // ★ コインの拡大率。2.0 で2倍サイズ
 
     float cx = pos.x + width * 0.5f;
     float cy = pos.y + height * 0.5f;
