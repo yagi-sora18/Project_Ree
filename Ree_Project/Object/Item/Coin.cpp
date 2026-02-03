@@ -54,7 +54,7 @@ void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
     int handle = frames[frame];
 
     // ==== 座標計算（少し大きめに描画） ====
-    const float SCALE = 1.5f;   // ★ コインの拡大率。2.0 で2倍サイズ
+    const float SCALE = 1.5f;   //コインの拡大率
 
     float cx = pos.x + width * 0.5f;
     float cy = pos.y + height * 0.5f;

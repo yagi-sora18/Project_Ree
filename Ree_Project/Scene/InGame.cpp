@@ -179,28 +179,16 @@ void InGame::Update(float dt) {
 
 
 	// カメラ（デッドゾーン）
-	//const int viewH = 720; // 画面高さに合わせて
-
 	const int SCREEN_W = 1280;
 	const int SCREEN_H = 720;
 
 	// 縦カメラ：デッドゾーン
-	/*const int DZ_TOP = viewH * 2 / 5;
-	const int DZ_BOT = viewH * 3 / 5;*/
-
 	const int DZ_TOP = SCREEN_H * 2 / 5;
 	const int DZ_BOT = SCREEN_H * 3 / 5;
 
 	int py = (int)player->pos.y - camera_y;
 	if (py < DZ_TOP) camera_y -= (DZ_TOP - py);
 	else if (py > DZ_BOT) camera_y += (py - DZ_BOT);
-
-	//if (camera_y < 0) camera_y = 0;
-	//右端固定＆クランプ
-	/*camera_x = Max(0, map_w_px - SCREEN_W);
-	camera_y = Clamp(camera_y, 0, Max(0, map_h_px - SCREEN_H));*/
-
-	// 横：マップが画面より広いなら右端固定／狭いなら常に camera_x=0（左側空白を維持）
 
 	if (map_w_px >= SCREEN_W) camera_x = Max(0, map_w_px - SCREEN_W);
 	else camera_x = 0;
@@ -234,7 +222,7 @@ void InGame::Update(float dt) {
 		}
 	}
 
-	// ★ ゴール到達チェック（Player と Goal のAABB）
+	//ゴール到達チェック（Player と Goal のAABB）
 	{
 		for (auto* obj : object_manager.GetObjects()) 
 		{
@@ -283,9 +271,6 @@ void InGame::Draw()
 		const int gaugeW = 110;
 		const int gaugeH = 60;
 		const int marginUp = 10;
-
-		//int gx = static_cast<int>(player->GetPosX()) - gaugeW / 2;
-		//int gy = static_cast<int>(player->GetPosY()) - marginUp - gaugeH;
 
 		const int gx = (int)(player->pos.x - camera_x + screen_off_x + player->width * 0.5f - gaugeW * 0.5f);
 		const int gy = (int)(player->pos.y - camera_y + screen_off_y - marginUp - gaugeH);
