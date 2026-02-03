@@ -145,7 +145,6 @@
     <ClCompile Include="Utillity\Collision.cpp" />
     <ClCompile Include="Utillity\InputControl.cpp" />
     <ClCompile Include="Utillity\ResourceManager.cpp" />
-    <ClCompile Include="Utillity\ScoreManager.cpp" />
     <ClCompile Include="Utillity\Vector2D.cpp" />
     <ClCompile Include="Object\Wall\Wall.cpp" />
   </ItemGroup>

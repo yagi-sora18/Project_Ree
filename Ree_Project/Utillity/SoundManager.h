@@ -6,27 +6,27 @@
 
 class SoundManager : public Singleton<SoundManager>
 {
-    friend class Singleton<SoundManager>;
+        friend class Singleton<SoundManager>;
 
-public:
-    void SetBgmVolume(int volume);
-    void SetSeVolume(int volume);
+    public:
+        void SetBgmVolume(int volume);
+        void SetSeVolume(int volume);
 
-    void PlayBgm(const std::string& path);
-    void StopBgm();
+        void PlayBgm(const std::string& path);
+        void StopBgm();
 
-    void PlaySe(const std::string& path);
-    void PlaySeLoop(const std::string& path);
-    void StopSe(const std::string& path);
+        void PlaySe(const std::string& path);
+        void PlaySeLoop(const std::string& path);
+        void StopSe(const std::string& path);
 
-private:
-    SoundManager() = default;
-    ~SoundManager() = default;
+    private:
+        SoundManager() = default;
+        ~SoundManager() = default;
 
-private:
-    std::string nowBgmPath;
-    int nowBgmHandle = 0;
+    private:
+        std::string nowBgmPath;
+        int nowBgmHandle = 0;
 
-    int bgmVolume = 200; // 0..255
-    int seVolume = 255;  // 0..255
+        int bgmVolume = 200; // 0..255
+        int seVolume = 255;  // 0..255
 };

@@ -6,32 +6,29 @@
 
 class Player;
 
-class ObjectManager {
-public:
-	~ObjectManager();
+class ObjectManager
+{
+	public:
+		~ObjectManager();
 
 
-	void Add(Object* obj) { if (obj) objects.push_back(obj); }
-	void ClearAll();
+		void Add(Object* obj) { if (obj) objects.push_back(obj); }
+		void ClearAll();
+		void UpdateAll(float dt);
+		void DrawAll(int camera_x, int camera_y, int off_x, int off_y);
 
 
-	void UpdateAll(float dt);
-	//void DrawAll(int camera_y);
-	//void DrawAll(int camera_x, int camera_y);
-	void DrawAll(int camera_x, int camera_y, int off_x, int off_y);
+		const std::vector<Object*>& GetObjects() const { return objects; }
 
 
-	const std::vector<Object*>& GetObjects() const { return objects; }
+		// スコア（簡易）
+		void AddScore(int s) { score += s; }
+		int GetScore() const { return score; }
+
+		Player* GetPlayer() const;
 
 
-	// スコア（簡易）
-	void AddScore(int s) { score += s; }
-	int GetScore() const { return score; }
-
-	Player* GetPlayer() const;
-
-
-private:
-	std::vector<Object*> objects;
-	int score{ 0 };
+	private:
+		std::vector<Object*> objects;
+		int score{ 0 };
 };

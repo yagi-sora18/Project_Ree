@@ -2,16 +2,18 @@
 
 
 template <class Type>
-class Singleton {
-protected:
-	Singleton() = default;
-	~Singleton() = default;
-	Singleton(const Singleton&) = delete;
-	Singleton& operator=(const Singleton&) = delete;
-public:
-	static Type* GetInstance() {
-		static Type instance; // 安全な静的寿命
-		return &instance;
-	}
-	static void DeleteInstance() { /* no-op */ }
+class Singleton
+{
+	protected:
+		Singleton() = default;
+		~Singleton() = default;
+		Singleton(const Singleton&) = delete;
+		Singleton& operator=(const Singleton&) = delete;
+	public:
+		static Type* GetInstance()
+		{
+			static Type instance; // 安全な静的寿命
+			return &instance;
+		}
+		static void DeleteInstance() { /* no-op */ }
 };

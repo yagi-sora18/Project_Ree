@@ -24,9 +24,6 @@
     <ClCompile Include="Utillity\ResourceManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utillity\ScoreManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Utillity\Vector2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>

@@ -20,51 +20,14 @@ static inline T Max(T a, T b) { return (a < b) ? b : a; }
 template<typename T>
 static inline T Min(T a, T b) { return (a < b) ? a : b; }
 
-
-// 色補間ユーティリティ（0..1）
-static inline int LerpI(int a, int b, float t) 
+InGame::InGame()
 {
-	if (t < 0.0f) t = 0.0f; else if (t > 1.0f) t = 1.0f;
-
-	return a + (int)((b - a) * t);
-
-}
-
-// 0→赤(255,0,0), 0.5→黄(255,255,0), 1→緑(0,255,0)
-static inline int GaugeColorFromRatio(float r) 
-{
-	if (r < 0.0f) r = 0.0f; else if (r > 1.0f) r = 1.0f;
-
-	int R, G;
-
-	if (r <= 0.5f) 
-	{
-		float t = r / 0.5f;          // 0→赤, 0.5→黄
-
-		R = 255;
-
-		G = LerpI(0, 255, t);
-
-	}
-	else 
-	{
-		float t = (r - 0.5f) / 0.5f; // 0.5→黄, 1→緑
-
-		R = LerpI(255, 0, t);
-
-		G = 255;
-
-	}
-
-	return GetColor(R, G, 0);
 
 }
 
 
-InGame::InGame() {}
-
-
-void InGame::Initialize() {
+void InGame::Initialize()
+{
 	player = nullptr;
 	object_manager.ClearAll();
 
@@ -75,19 +38,16 @@ void InGame::Initialize() {
 	std::vector<Wall> tW;
 	std::vector<Goal> tG;
 
-
-	//LoadMapFromCSV("Resource/Map/map01.csv", tP, tPf, tC, tW);
-
 	LoadMapFromCSV("Resource/Map/map01.csv", tP, tPf, tC, tW, tG, 50, &map_w_px, &map_h_px);
-
 
 	for (const auto& P : tPf) object_manager.Add(new Platform(P.pos.x, P.pos.y, P.width, P.height));
 	for (const auto& C : tC) object_manager.Add(new Coin(C.pos.x, C.pos.y, C.width, C.height));
 	for (const auto& W : tW) object_manager.Add(new Wall(W.pos.x, W.pos.y, W.width, W.height));
-	for (const auto& G : tG)  object_manager.Add(new Goal(G.pos.x, G.pos.y, G.width, G.height)); // ★ ゴール生成
+	for (const auto& G : tG)  object_manager.Add(new Goal(G.pos.x, G.pos.y, G.width, G.height));
 
 	auto* rm = ResourceManager::GetInstance();
-	std::vector<std::string> gauge_paths = {
+	std::vector<std::string> gauge_paths =
+	{
 		"Resource/Image/gage/Gage1.PNG",
 		"Resource/Image/gage/Gage2.PNG",
 		"Resource/Image/gage/Gage3.PNG",
@@ -117,7 +77,7 @@ void InGame::Initialize() {
 
 	camera_y = 0; now_scene = eSceneType::eInGame; next_scene = eSceneType::eInGame;
 
-	// ★ 制限時間の初期値（1分 = 60秒）
+	//制限時間の初期値（1分 = 60秒）
 	time_limit = 180.0f;
 
 	//何点ごとに時間ボーナスを与えるか
@@ -173,7 +133,8 @@ void InGame::Initialize() {
 }
 
 
-void InGame::Update(float dt) {
+void InGame::Update(float dt)
+{
 	InputControl::GetInstance()->Update();
 	object_manager.UpdateAll(dt);
 
@@ -198,17 +159,19 @@ void InGame::Update(float dt) {
 	camera_y = Clamp(camera_y, 0, Max(0, map_h_px - SCREEN_H));
 
 	// === 制限時間のカウントダウン ===
-	if (time_limit > 0.0f) {
+	if (time_limit > 0.0f)
+	{
 		time_limit -= dt;
-		if (time_limit <= 0.0f) {
+		if (time_limit <= 0.0f)
+		{
 			time_limit = 0.0f;
 
-			// ★ 時間切れになったらリザルトへ
+			//時間切れになったらリザルトへ
 			next_scene = eSceneType::eResult;
 		}
 	}
 
-	// === コイン一定量で時間ボーナス ===
+	//コイン一定量で時間ボーナス
 	{
 		const int SCORE_PER_BONUS = 50;   // 何点ごとに…
 		const float TIME_BONUS = 10.0f;   // 何秒増やすか
@@ -246,8 +209,8 @@ void InGame::Update(float dt) {
 		return;
 	}
 
-
-	if (InputControl::GetInstance()->GetKeyDown(KEY_INPUT_ESCAPE)) {
+	if (InputControl::GetInstance()->GetKeyDown(KEY_INPUT_ESCAPE))
+	{
 		next_scene = eSceneType::eResult;
 	}
 }
@@ -256,7 +219,8 @@ void InGame::Update(float dt) {
 void InGame::Draw()
 {
 	// 背景（最初に描く）
-	if (bg_image != -1) {
+	if (bg_image != -1)
+	{
 		DrawExtendGraph(0, 0, 1280, 720, bg_image, TRUE);
 	}
 

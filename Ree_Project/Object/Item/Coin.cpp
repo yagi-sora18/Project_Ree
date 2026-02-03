@@ -5,11 +5,8 @@
 
 #include <cmath>
 
-
-//static constexpr float GAME_OFF_X = 250.0f;
-
-
-void Coin::Update(float) {
+void Coin::Update(float)
+{
 	// 毎フレーム同期（pivot/point/box）
 	UpdateCollision();
 }
@@ -24,8 +21,8 @@ void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
     static bool s_loaded = false;
     if (!s_loaded) {
         // 画像の実際のパスはあなたのフォルダ構成に合わせて変更してください
-        // 例: "Resource/Image/Coin_0.png" など
-        std::vector<std::string> paths = {
+        std::vector<std::string> paths =
+        {
             "Resource/Image/Coin_0.png",
             "Resource/Image/Coin_1.png",
             "Resource/Image/Coin_2.png",
@@ -36,9 +33,10 @@ void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
         s_loaded = true;
     }
 
-    // ==== 描画に使うハンドル列を取得 ====
+    //描画に使うハンドル列を取得
     const auto& frames = ResourceManager::GetInstance()->GetAnimImages("coin_spin");
-    if (frames.empty()) {
+    if (frames.empty())
+    {
         // 読み込み失敗時は、今まで通り円で描画しておく（保険）
         int cx = (int)(pos.x - camera_x + off_x + width * 0.5f);
         int cy = (int)(pos.y - camera_y + off_y + height * 0.5f);
@@ -66,17 +64,6 @@ void Coin::Draw(int camera_x, int camera_y, int off_x, int off_y)
     int x1 = (int)(cx + drawW * 0.5f - camera_x + off_x);
     int y0 = (int)(cy - drawH * 0.5f - camera_y + off_y);
     int y1 = (int)(cy + drawH * 0.5f - camera_y + off_y);
-
-    // ★ もし反転したいなら、ここで x0 と x1 を入れ替える
-    // （左右対称なコイン画像なら見た目はほぼ同じですが、やり方の例として）
-    /*
-    bool flip = true; // 条件に応じて true/false を変えてもOK
-    if (flip) {
-        int tmp = x0;
-        x0 = x1;
-        x1 = tmp;
-    }
-    */
 
     DrawExtendGraph(x0, y0, x1, y1, handle, TRUE);
 

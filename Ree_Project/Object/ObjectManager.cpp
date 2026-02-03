@@ -8,7 +8,8 @@ ObjectManager::~ObjectManager() { ClearAll(); }
 
 
 
-void ObjectManager::ClearAll() {
+void ObjectManager::ClearAll()
+{
 	for (auto* o : objects) delete o;
 	objects.clear();
 	score = 0;
@@ -16,25 +17,30 @@ void ObjectManager::ClearAll() {
 }
 
 
-void ObjectManager::UpdateAll(float dt) {
+void ObjectManager::UpdateAll(float dt)
+{
 	// 各オブジェクトのUpdate
 	for (auto* obj : objects) if (obj && obj->IsActive()) obj->Update(dt);
 
 
 	// プレイヤーの物理適用
-	for (auto* obj : objects) {
+	for (auto* obj : objects)
+	{
 		if (!obj || !obj->IsActive()) continue;
-		if (auto* p = dynamic_cast<Player*>(obj)) {
+		if (auto* p = dynamic_cast<Player*>(obj))
+		{
 			p->ApplyPhysics(objects, dt);
 		}
 	}
 
 
 	// コイン取得
-	for (auto* objP : objects) {
+	for (auto* objP : objects)
+	{
 		auto* p = dynamic_cast<Player*>(objP);
 		if (!p || !p->IsActive()) continue;
-		for (auto* objC : objects) {
+		for (auto* objC : objects)
+		{
 			auto* c = dynamic_cast<Coin*>(objC);
 			if (!c || !c->IsActive() || c->collected) continue;
 			if (IsCheckCollision(p->collision, c->collision)) 
@@ -51,23 +57,17 @@ void ObjectManager::UpdateAll(float dt) {
 
 
 	// 4) 破棄
-	objects.erase(std::remove_if(objects.begin(), objects.end(), [](Object* o) {
+	objects.erase(std::remove_if(objects.begin(), objects.end(), [](Object* o)
+		{
 		if (!o || !o->IsActive()) { delete o; return true; }
 		return false;
 		}), objects.end());
 
 }
 
-
-//void ObjectManager::DrawAll(int camera_y) {
-//	for (auto* obj : objects) if (obj && obj->IsActive()) obj->Draw(camera_y);
-//}
-
 void ObjectManager::DrawAll(int camera_x, int camera_y, int off_x, int off_y)
 {
-	//for (auto* obj : objects) if (obj && obj->IsActive()) obj->Draw(camera_x, camera_y);
 	for (auto* obj : objects) if (obj && obj->IsActive()) obj->Draw(camera_x, camera_y, off_x, off_y);
-
 }
 
 Player* ObjectManager::GetPlayer() const

@@ -6,7 +6,10 @@
 
 ResultMode Result::last_mode = ResultMode::GameOver;
 
-Result::Result() {}
+Result::Result()
+{
+
+}
 
 Result::~Result()
 {
@@ -79,5 +82,5 @@ void Result::Draw()
     }
 
     // ëÄçÏê‡ñæÅiâEâ∫Ç†ÇΩÇËÅj
-    DrawString(30, screen_h - 60, "ENTER : Title   R : Retry", GetColor(255, 255, 255));
+    //DrawString(30, screen_h - 60, "ENTER : Title   R : Retry", GetColor(0, 0, 0));
 }

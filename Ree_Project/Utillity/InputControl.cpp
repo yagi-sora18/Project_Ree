@@ -2,7 +2,8 @@
 #include <DxLib.h>
 #include <cstring>
 
-void InputControl::Update() {
+void InputControl::Update()
+{
     std::memcpy(old_key, now_key, sizeof(now_key));
-    GetHitKeyStateAll(now_key);  // Åö char[256] Ç≈å^àÍív
+    GetHitKeyStateAll(now_key);
 }

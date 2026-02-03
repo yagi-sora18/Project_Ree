@@ -3,7 +3,8 @@
 #include "Utillity/ResourceManager.h"
 
 
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+{
 	SetGraphMode(1280, 720, 32);
 	ChangeWindowMode(TRUE);
 	if (DxLib_Init() == -1) return -1;
@@ -14,7 +15,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	unsigned int prev = GetNowCount();
 
 
-	while (ProcessMessage() == 0 && ClearDrawScreen() == 0) {
+	while (ProcessMessage() == 0 && ClearDrawScreen() == 0)
+	{
 		unsigned int now = GetNowCount();
 		float dt = (now - prev) / 1000.0f; // •b
 		prev = now;
@@ -25,7 +27,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		sm.Draw();
 		ScreenFlip();
 	}
-
 
 	ResourceManager::GetInstance()->ReleaseAll();
 	DxLib_End();

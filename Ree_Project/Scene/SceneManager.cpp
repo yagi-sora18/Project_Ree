@@ -8,7 +8,8 @@ SceneManager::SceneManager() { ChangeScene(eSceneType::eTitle); }
 SceneManager::~SceneManager() = default;
 
 
-void SceneManager::Update(float dt) {
+void SceneManager::Update(float dt)
+{
 	scene->Update(dt);
 	if (scene->Next() != eSceneType::eTitle &&
 		scene->Next() != eSceneType::eInGame &&
@@ -36,11 +37,13 @@ void SceneManager::Update(float dt) {
 void SceneManager::Draw() { scene->Draw(); }
 
 
-void SceneManager::ChangeScene(eSceneType to) {
-	switch (to) {
-	case eSceneType::eTitle: scene.reset(new Title()); break;
-	case eSceneType::eInGame: scene.reset(new InGame()); break;
-	case eSceneType::eResult: scene.reset(new Result()); break;
+void SceneManager::ChangeScene(eSceneType to)
+{
+	switch (to)
+	{
+		case eSceneType::eTitle: scene.reset(new Title()); break;
+		case eSceneType::eInGame: scene.reset(new InGame()); break;
+		case eSceneType::eResult: scene.reset(new Result()); break;
 	}
 	scene->Initialize();
 }

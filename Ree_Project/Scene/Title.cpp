@@ -1,14 +1,15 @@
 // Title.cpp
 #include <DxLib.h>
 #include "Title.h"
-#include "../Utillity/InputControl.h"  // 入力取得用（InGameと同じクラス）:contentReference[oaicite:3]{index=3}
+#include "../Utillity/InputControl.h"  // 入力取得用
 #include "../Utillity/SoundManager.h"
 
 Title::Title() {}
 
 Title::~Title()
 {
-    if (titleGraph != -1) {
+    if (titleGraph != -1)
+    {
         DeleteGraph(titleGraph);
         titleGraph = -1;
     }
@@ -19,7 +20,8 @@ void Title::Initialize()
     next_scene = eSceneType::eTitle;
 
     // すでに読み込んでいたら一度破棄
-    if (titleGraph != -1) {
+    if (titleGraph != -1)
+    {
         DeleteGraph(titleGraph);
         titleGraph = -1;
     }
@@ -56,11 +58,13 @@ void Title::Draw()
     GetScreenState(&sw, &sh, &cc);   // 画面サイズ取得
 
     // 背景画像
-    if (titleGraph != -1) {
+    if (titleGraph != -1)
+    {
         // 画面全体に伸縮して表示
         DrawExtendGraph(0, 0, sw, sh, titleGraph, TRUE);
     }
-    else {
+    else
+    {
         // 画像読み込み失敗時の代わりの表示
         DrawBox(0, 0, sw, sh, GetColor(0, 0, 80), TRUE);
         DrawString(50, 50, "Title image not found.", GetColor(255, 255, 255));
