@@ -31,6 +31,7 @@ class InGame : public SceneBase
 		float dead_line_y = 0.0f;  // ここより下に落ちたらゲームオーバー
 
 		int bg_image = -1;
+		int coin_count = 0;
 
 		const std::vector<int>* charge_gauge_images{ nullptr };
 

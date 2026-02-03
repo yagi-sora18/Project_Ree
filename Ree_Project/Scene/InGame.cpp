@@ -185,6 +185,15 @@ void InGame::Update(float dt)
 		}
 	}
 
+	static int prev_score = 0;
+	int current_score = object_manager.GetScore();
+	int diff = current_score - prev_score;
+	if (diff > 0) {
+		coin_count += diff / 10; // コイン1枚 = 10点 の場合
+		prev_score = current_score;
+	}
+
+
 	//ゴール到達チェック（Player と Goal のAABB）
 	{
 		for (auto* obj : object_manager.GetObjects()) 
@@ -226,6 +235,9 @@ void InGame::Draw()
 
 	object_manager.DrawAll(camera_x, camera_y, screen_off_x, screen_off_y);
 
+	int white = GetColor(255, 255, 255);
+
+
 	// ===== 溜めゲージ（頭上UI） =====
 	if (player && player->IsCharging() && charge_gauge_images && !charge_gauge_images->empty())
 	{
@@ -248,11 +260,8 @@ void InGame::Draw()
 		DrawExtendGraph(gx, gy, gx + gaugeW, gy + gaugeH, handle, TRUE);
 	}
 
-
-	// スコア表示
-	DrawFormatString(20, 20, GetColor(255, 255, 255), "Score:%d", object_manager.GetScore());
-
-	int white = GetColor(255, 255, 255);
+	//コイン表示
+	DrawFormatString(20, 20, GetColor(255, 255, 255), "Coins:%d", coin_count);
 
 	// === 制限時間表示（スコアの下） ===
 	{
@@ -267,7 +276,10 @@ void InGame::Draw()
 		int timeColor = (t <= 20) ? GetColor(255, 80, 80) : white;
 
 		DrawFormatString(20, 40, timeColor, "Time: %02d:%02d", minutes, seconds);
+		
 	}
+
+
 
 	// ここまでは同じ
 	int sw, sh, cc;
