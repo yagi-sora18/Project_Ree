@@ -11,13 +11,13 @@ void Goal::Draw(int camera_x, int camera_y, int off_x, int off_y)
     {
         std::vector<std::string> paths =
         {
-            "Resource/Image/Door/Door_01.jpg",
-            "Resource/Image/Door/Door_02.jpg",
-            "Resource/Image/Door/Door_03.jpg",
-            "Resource/Image/Door/Door_04.jpg",
-            "Resource/Image/Door/Door_05.jpg",
-            "Resource/Image/Door/Door_06.jpg",
-            "Resource/Image/Door/Door_07.jpg",
+            "Resource/Image/Door/Door_01.png",
+            "Resource/Image/Door/Door_02.png",
+            "Resource/Image/Door/Door_03.png",
+            "Resource/Image/Door/Door_04.png",
+            "Resource/Image/Door/Door_05.png",
+            "Resource/Image/Door/Door_06.png",
+            "Resource/Image/Door/Door_07.png",
         };
         ResourceManager::GetInstance()->LoadAnimImages("goal_door", paths);
         loadedOnce = true;
@@ -47,10 +47,10 @@ void Goal::Draw(int camera_x, int camera_y, int off_x, int off_y)
     int x1 = (int)(pos.x + width - camera_x + off_x);
     int y1 = (int)(pos.y + height - camera_y + off_y);
 
-    // ちょっと光らせる（なくてもOK）
-    SetDrawBlendMode(DX_BLENDMODE_ADD, 120);
-    DrawBox(x0 - 6, y0 - 6, x1 + 6, y1 + 6, GetColor(255, 255, 140), TRUE);
-    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+    //// ちょっと光らせる（なくてもOK）
+    //SetDrawBlendMode(DX_BLENDMODE_ADD, 120);
+    //DrawBox(x0 - 6, y0 - 6, x1 + 6, y1 + 6, GetColor(255, 255, 140), TRUE);
+    //SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
     DrawExtendGraph(x0, y0, x1, y1, handle, TRUE);
 
